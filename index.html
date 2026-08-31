@@ -2,6 +2,7 @@
 <html lang="sk">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Interaktívna mapa - História chutí 2</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
     <style>
@@ -113,6 +114,49 @@
         
         .list-container::-webkit-scrollbar { width: 6px; }
         .list-container::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 3px; }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                top: auto;
+                bottom: 0;
+                right: 0;
+                width: 100%;
+                max-height: 45vh;
+                border-radius: 15px 15px 0 0;
+                box-sizing: border-box;
+                box-shadow: 0 -4px 15px rgba(0,0,0,0.2);
+            }
+
+            .leaflet-bottom {
+                bottom: 45vh !important; 
+            }
+            
+            .main-label {
+                font-size: 18px;
+            }
+            .alt-label {
+                font-size: 16px;
+            }
+            .active-tooltip {
+                font-size: 20px !important;
+                padding: 6px 12px;
+            }
+            
+            .loc-item {
+                font-size: 15px;
+                padding: 10px 12px;
+            }
+            
+            .sidebar select {
+                font-size: 16px;
+                padding: 12px;
+            }
+            
+            .day-title {
+                font-size: 16px;
+                padding: 8px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -149,7 +193,8 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script>
-        var map = L.map('map').setView([48.66, 19.69], 8);
+        var map = L.map('map', {zoomControl: false}).setView([48.66, 19.69], 8);
+        L.control.zoom({ position: 'topleft' }).addTo(map);
 
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 17,
@@ -157,22 +202,35 @@
             attribution: '&copy; OpenStreetMap'
         }).addTo(map);
 
+        var isMobile = window.innerWidth <= 768;
+        var iconScale = isMobile ? 1.4 : 1;
+        var tooltipOffset = isMobile ? [15, -15] : [10, -10];
+
         var redIcon = new L.Icon({
             iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
             shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-            iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+            iconSize: [25 * iconScale, 41 * iconScale], 
+            iconAnchor: [12 * iconScale, 41 * iconScale], 
+            popupAnchor: [1, -34 * iconScale], 
+            shadowSize: [41 * iconScale, 41 * iconScale]
         });
 
         var blueIcon = new L.Icon({
             iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
             shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-            iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+            iconSize: [25 * iconScale, 41 * iconScale], 
+            iconAnchor: [12 * iconScale, 41 * iconScale], 
+            popupAnchor: [1, -34 * iconScale], 
+            shadowSize: [41 * iconScale, 41 * iconScale]
         });
 
         var highlightIcon = new L.Icon({
             iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-gold.png',
             shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-            iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+            iconSize: [25 * iconScale, 41 * iconScale], 
+            iconAnchor: [12 * iconScale, 41 * iconScale], 
+            popupAnchor: [1, -34 * iconScale], 
+            shadowSize: [41 * iconScale, 41 * iconScale]
         });
 
         var episodesData = {
@@ -316,7 +374,7 @@
                 listHtml += `<div class="loc-item main" id="${mId}" onclick="focusMarker('${mId}')">${dayData.main.name}</div>`;
                 
                 var markerMain = L.marker(dayData.main.coords, {icon: redIcon})
-                    .bindTooltip(dayData.main.name, { permanent: true, interactive: true, direction: 'right', className: 'main-label', offset: [10, -10] })
+                    .bindTooltip(dayData.main.name, { permanent: true, interactive: true, direction: 'right', className: 'main-label', offset: tooltipOffset })
                     .on('click', function() { focusMarker(mId); });
                 markersGroup.addLayer(markerMain);
                 markerObjects.push({ id: mId, name: dayData.main.name, isMain: true, marker: markerMain, originalIcon: redIcon });
@@ -328,7 +386,7 @@
                     listHtml += `<div class="loc-item alt" id="${aId}" onclick="focusMarker('${aId}')">${altLoc.name}</div>`;
                     
                     var markerAlt = L.marker(altLoc.coords, {icon: blueIcon})
-                        .bindTooltip(altLoc.name, { permanent: true, interactive: true, direction: 'right', className: 'alt-label', offset: [10, -10] })
+                        .bindTooltip(altLoc.name, { permanent: true, interactive: true, direction: 'right', className: 'alt-label', offset: tooltipOffset })
                         .on('click', function() { focusMarker(aId); });
                     markersGroup.addLayer(markerAlt);
                     markerObjects.push({ id: aId, name: altLoc.name, isMain: false, marker: markerAlt, originalIcon: blueIcon });
@@ -364,9 +422,12 @@
             });
 
             if(bounds.length > 0) {
+                var isMobileView = window.innerWidth <= 768;
+                var bottomPadding = isMobileView ? [50, window.innerHeight * 0.45 + 30] : [380, 50];
+
                 map.fitBounds(bounds, { 
                     paddingTopLeft: [50, 50], 
-                    paddingBottomRight: [380, 50], 
+                    paddingBottomRight: bottomPadding, 
                     maxZoom: 11 
                 });
             }
@@ -382,6 +443,11 @@
 
         document.getElementById("episode-select").addEventListener("change", function(e) {
             loadEpisode(e.target.value, true);
+        });
+
+        window.addEventListener('resize', function() {
+            var currentEpisode = document.getElementById("episode-select").value;
+            loadEpisode(currentEpisode, false);
         });
 
     </script>
