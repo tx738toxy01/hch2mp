@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <title>Interaktívna mapa - História chutí 2</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    <style>
+        body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        #map { height: 100vh; width: 100vw; background-color: #e6e6e6; }
+        
+        .sidebar {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            width: 320px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        .legend-area {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 13px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .legend-item { display: flex; align-items: center; }
+        .legend-img { width: 12px; height: 20px; margin-right: 5px; }
+
+        .list-container {
+            overflow-y: auto;
+            flex-grow: 1;
+            padding-right: 5px;
+        }
+
+        .day-group { margin-bottom: 15px; }
+        .day-title {
+            font-weight: bold;
+            font-size: 14px;
+            background: #f0f0f0;
+            padding: 5px;
+            border-radius: 4px;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .loc-type {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #777;
+            margin: 8px 0 2px 5px;
+            letter-spacing: 0.5px;
+        }
+
+        .loc-item {
+            padding: 6px 8px;
+            margin-bottom: 2px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+        }
+        .loc-item:hover { background: #f9f9f9; border-color: #bbb; }
+        .loc-item.active { background: #fffde7; border-color: #ffd600; font-weight: bold; }
+        
+        .loc-item.main { border-left: 4px solid #cc0000; }
+        .loc-item.alt { border-left: 4px solid #0000cc; }
+
+        .main-label {
+            background: transparent; border: none; box-shadow: none; font-weight: bold; font-size: 14px;
+            color: #cc0000; text-shadow: 2px 2px 0px white, -2px -2px 0px white, 2px -2px 0px white, -2px 2px 0px white;
+        }
+        .alt-label {
+            background: transparent; border: none; box-shadow: none; font-weight: bold; font-size: 12px;
+            color: #0000cc; text-shadow: 2px 2px 0px white, -2px -2px 0px white, 2px -2px 0px white, -2px 2px 0px white;
+        }
+
+        .active-tooltip {
+            background-color: #ffd600 !important;
+            color: #000 !important;
+            border: 2px solid #b8860b !important;
+            font-weight: bold !important;
+            font-size: 15px !important;
+            text-shadow: none !important;
+            box-shadow: 0 0 12px rgba(0,0,0,0.4) !important;
+            border-radius: 6px;
+            padding: 4px 8px;
+            cursor: pointer;
+        }
+        .active-tooltip::before { display: none !important; }
+        
+        .list-container::-webkit-scrollbar { width: 6px; }
+        .list-container::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <select id="episode-select">
+            <option value="1" selected>Epizóda 1: Turci</option>
+            <option value="2">Epizóda 2: Valasi</option>
+            <option value="3">Epizóda 3: Nemci</option>
+            <option value="4">Epizóda 4: Maďarskí bratia</option>
+            <option value="5">Epizóda 5: Husiti</option>
+            <option value="6">Epizóda 6: Slovenskí Židia</option>
+            <option value="7">Epizóda 7: Mongoli</option>
+            <option value="8">Epizóda 8: Rusíni</option>
+            <option value="9">Epizóda 9: Rómska komunita</option>
+            <option value="10">Epizóda 10: Habáni</option>
+            <option value="11">Epizóda 11: Chorváti</option>
+            <option value="12">Epizóda 12: Francúzi</option>
+            <option value="13">Epizóda 13: Taliani</option>
+            <option value="14">Epizóda 14: Gorali</option>
+            <option value="15">Epizóda 15: Vietnamci</option>
+        </select>
+
+        <div class="legend-area">
+            <div class="legend-item"><img class="legend-img" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png" alt="red"><b>Hlavné</b></div>
+            <div class="legend-item"><img class="legend-img" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png" alt="blue"><b>Alternatívy</b></div>
+            <div class="legend-item"><img class="legend-img" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-gold.png" alt="gold"><b>Vybrané</b></div>
+        </div>
+
+        <div class="list-container" id="locations-list"></div>
+    </div>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script>
+        var map = L.map('map').setView([48.66, 19.69], 8);
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 17,
+            opacity: 0.6,
+            attribution: '&copy; OpenStreetMap'
+        }).addTo(map);
+
+        var redIcon = new L.Icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+        });
+
+        var blueIcon = new L.Icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+        });
+
+        var highlightIcon = new L.Icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-gold.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+        });
+
+        var episodesData = {
+            "1": [
+                { day: "🗓️ DEŇ 1", main: {name: "Fiľakovský hrad", coords: [48.271, 19.824]}, alt: [{name: "Hrad Šomoška", coords: [48.171, 19.856]}, {name: "Hrad Modrý Kameň", coords: [48.243, 19.333]}, {name: "Hrad Čabraď", coords: [48.243, 19.103]}] },
+                { day: "🗓️ DEŇ 2", main: {name: "Františkánsky kláštor Fiľakovo", coords: [48.270, 19.826]}, alt: [{name: "Kláštor Bzovík", coords: [48.318, 19.088]}, {name: "Kláštor Hronský Beňadik", coords: [48.344, 18.557]}, {name: "Zámok Halič", coords: [48.358, 19.575]}] },
+                { day: "🗓️ DEŇ 3", main: {name: "Zámok Halič", coords: [48.358, 19.575]}, alt: [{name: "Kaštieľ Divín", coords: [48.448, 19.531]}, {name: "Kaštieľ Svätý Anton", coords: [48.422, 18.940]}, {name: "Zvolenský zámok", coords: [48.572, 19.127]}] }
+            ],
+            "2": [
+                { day: "🗓️ DEŇ 1", main: {name: "Salaš Zbojská", coords: [48.727, 19.854]}, alt: [{name: "Salaš Krajinka", coords: [49.091, 19.263]}, {name: "Salaš Syrex", coords: [49.278, 19.187]}, {name: "Koliba u dobrého pastiera", coords: [49.073, 19.231]}] },
+                { day: "🗓️ DEŇ 2", main: {name: "Historické lazy Podpoľania", coords: [48.564, 19.418]}, alt: [{name: "Múzeum oravskej dediny Zuberec", coords: [49.259, 19.662]}, {name: "Skanzen Vychylovka", coords: [49.382, 19.096]}, {name: "Skanzen Pribylina", coords: [49.106, 19.799]}] },
+                { day: "🗓️ DEŇ 3", main: {name: "Príroda Karpát", coords: [48.694, 19.682]}, alt: [{name: "Jánošíkove diery", coords: [49.257, 19.066]}, {name: "Kráľova hoľa", coords: [48.882, 20.139]}, {name: "Zádielska tiesňava", coords: [48.618, 20.827]}] }
+            ],
+            "3": [
+                { day: "🗓️ DEŇ 1", main: {name: "Spišská Sobota", coords: [49.065, 20.315]}, alt: [{name: "Banská Štiavnica", coords: [48.459, 18.893]}, {name: "Kremnica", coords: [48.704, 18.917]}, {name: "Kežmarok", coords: [49.133, 20.433]}] },
+                { day: "🗓️ DEŇ 2", main: {name: "Spišské múzeum v Levoči", coords: [49.025, 20.589]}, alt: [{name: "Thurzov dom Levoča", coords: [49.026, 20.589]}, {name: "Kostol Kežmarok", coords: [49.133, 20.430]}, {name: "Starý zámok B. Štiavnica", coords: [48.458, 18.890]}] },
+                { day: "🗓️ DEŇ 3", main: {name: "Banské múzeum v prírode", coords: [48.458, 18.893]}, alt: [{name: "Exteriéry Spišskej Novej Vsi", coords: [48.944, 20.568]}, {name: "Štôlňa Bartolomej", coords: [48.455, 18.895]}, {name: "Exteriéry Ľubietová", coords: [48.744, 19.362]}] }
+            ],
+            "4": [
+                { day: "🗓️ DEŇ 1", main: {name: "Kaštieľ Borša", coords: [48.381, 21.705]}, alt: [{name: "Kaštieľ Betliar", coords: [48.702, 20.509]}, {name: "Kráľovský Chlmec", coords: [48.423, 21.980]}, {name: "Kaštieľ v Trebišove", coords: [48.621, 21.722]}] },
+                { day: "🗓️ DEŇ 2", main: {name: "Breh rieky Bodrog", coords: [48.390, 21.680]}, alt: [{name: "Mŕtve rameno Tajba", coords: [48.375, 21.785]}, {name: "Senecké jazerá", coords: [48.219, 17.419]}, {name: "Brehy rieky Latorica", coords: [48.497, 21.936]}] },
+                { day: "🗓️ DEŇ 3", main: {name: "Dóm sv. Alžbety", coords: [48.720, 21.257]}, alt: [{name: "Hlavná ulica Košice", coords: [48.721, 21.258]}, {name: "Východoslovenské múzeum", coords: [48.726, 21.253]}, {name: "Katova bašta", coords: [48.722, 21.261]}] }
+            ],
+            "5": [
+                { day: "🗓️ DEŇ 1", main: {name: "Housův mlýn Tábor", coords: [49.417, 14.659]}, alt: [{name: "Husitské múzeum Tábor", coords: [49.414, 14.658]}, {name: "Kozí Hrádek", coords: [49.390, 14.723]}, {name: "Hrad Kotnov", coords: [49.411, 14.655]}] },
+                { day: "🗓️ DEŇ 2", main: {name: "Hrad Branč", coords: [48.730, 17.461]}, alt: [{name: "Topoľčiansky hrad", coords: [48.660, 18.049]}, {name: "Hrad Korlátka", coords: [48.575, 17.386]}, {name: "Hrad Dobrá Voda", coords: [48.608, 17.525]}] },
+                { day: "🗓️ DEŇ 3", main: {name: "Gazdovský dvor Turá Lúka", coords: [48.737, 17.534]}, alt: [{name: "Skanzen Strážnice", coords: [48.905, 17.310]}, {name: "Skanzen Myjava", coords: [48.750, 17.568]}, {name: "Gazdovský dvor Vrbovce", coords: [48.796, 17.467]}] }
+            ],
+            "6": [
+                { day: "🗓️ DEŇ 1", main: {name: "Židovská náboženská obec Bratislava", coords: [48.144, 17.106]}, alt: [{name: "Múzeum židovskej kultúry SNM", coords: [48.142, 17.103]}, {name: "Pamätník Chatama Sofera", coords: [48.141, 17.092]}, {name: "Synagóga v Stupave", coords: [48.274, 17.032]}] },
+                { day: "🗓️ DEŇ 2", main: {name: "Slovenský Grob", coords: [48.261, 17.256]}, alt: [{name: "Synagóga Trnava", coords: [48.377, 17.589]}, {name: "Nitra", coords: [48.312, 18.089]}, {name: "Vinohradnícky dom Pezinok", coords: [48.288, 17.266]}] },
+                { day: "🗓️ DEŇ 3", main: {name: "Stará Tržnica Bratislava", coords: [48.144, 17.111]}, alt: [{name: "Košice", coords: [48.720, 21.258]}, {name: "Komárno", coords: [47.760, 18.125]}, {name: "Synagóga v Nových Zámkoch", coords: [47.986, 18.163]}] }
+            ],
+            "7": [
+                { day: "🗓️ DEŇ 1", main: {name: "Zemplínsky hrad", coords: [48.441, 21.815]}, alt: [{name: "Hrad Brekov", coords: [48.902, 21.832]}, {name: "Jasov", coords: [48.681, 20.975]}, {name: "Hradište v Tibave", coords: [48.739, 22.285]}] },
+                { day: "🗓️ DEŇ 2", main: {name: "Spišský hrad", coords: [49.000, 20.768]}, alt: [{name: "Hrad Ľubovňa", coords: [49.314, 20.697]}, {name: "Podolínec", coords: [49.258, 20.534]}, {name: "Kežmarský hrad", coords: [49.139, 20.433]}] },
+                { day: "🗓️ DEŇ 3", main: {name: "Prírodná scenéria Košice-okolie", coords: [48.614, 20.829]}, alt: [{name: "Zádiel", coords: [48.618, 20.827]}, {name: "Hradisko Valaliky", coords: [48.636, 21.272]}, {name: "Archeoskanzen Nižná Myšľa", coords: [48.629, 21.325]}] }
+            ],
+            "8": [
+                { day: "🗓️ DEŇ 1", main: {name: "Skanzen Svidník", coords: [49.308, 21.566]}, alt: [{name: "Skanzen Humenné", coords: [48.940, 21.905]}, {name: "Múzeum ľudovej architektúry Bardejovské Kúpele", coords: [49.329, 21.267]}, {name: "Skanzen pod Ľubovnianskym hradom", coords: [49.314, 20.697]}] },
+                { day: "🗓️ DEŇ 2", main: {name: "Múzeum rusínskej kultúry", coords: [48.998, 21.239]}, alt: [{name: "Ladomirová", coords: [49.328, 21.621]}, {name: "Sninský kaštieľ", coords: [48.986, 22.152]}, {name: "Hervartov", coords: [49.246, 21.203]}] },
+                { day: "🗓️ DEŇ 3", main: {name: "Drevená dedinka v okolí Bardejova", coords: [49.293, 21.275]}, alt: [{name: "Východné Karpaty - Poloniny", coords: [49.050, 22.350]}, {name: "Tokajík", coords: [49.109, 21.710]}, {name: "Obec Runina", coords: [49.071, 22.404]}] }
+            ],
+            "9": [
+                { day: "🗓️ DEŇ 1", main: {name: "Historický dvor", coords: [48.330, 19.664]}, alt: [{name: "Múzeum rómskej kultúry SNM Martin", coords: [49.034, 18.932]}, {name: "Skanzen Rožňava", coords: [48.664, 20.532]}, {name: "Dvor vo Fiľakove", coords: [48.271, 19.824]}] },
+                { day: "🗓️ DEŇ 2", main: {name: "Panský kaštieľ alebo mestské korzo", coords: [48.720, 21.257]}, alt: [{name: "Levický hrad", coords: [48.222, 18.595]}, {name: "Historická Nitra", coords: [48.312, 18.089]}, {name: "Park kaštieľa Betliar", coords: [48.702, 20.509]}] },
+                { day: "🗓️ DEŇ 3", main: {name: "Ranč", coords: [48.000, 18.000]}, alt: [{name: "Podunajsko", coords: [47.850, 17.550]}, {name: "Abov", coords: [48.600, 21.200]}, {name: "Lúky na Gemeri", coords: [48.665, 20.536]}] }
+            ],
+            "10": [
+                { day: "🗓️ DEŇ 1", main: {name: "Habánsky dvor Veľké Leváre", coords: [48.502, 17.001]}, alt: [{name: "Habánsky dvor Sobotište", coords: [48.730, 17.404]}, {name: "Moravský Svätý Ján", coords: [48.587, 16.999]}, {name: "Majolika Modra", coords: [48.334, 17.309]}] },
+                { day: "🗓️ DEŇ 2", main: {name: "Historický mlyn alebo sušiareň na Záhorí", coords: [48.551, 17.105]}, alt: [{name: "Schaubmarov mlyn", coords: [48.272, 17.262]}, {name: "Holíčsky zámok", coords: [48.810, 17.159]}, {name: "Mlyny Oblazy", coords: [49.172, 19.539]}] },
+                { day: "🗓️ DEŇ 3", main: {name: "Interiér múzea vo Veľkých Levároch", coords: [48.502, 17.000]}, alt: [{name: "Skalica", coords: [48.844, 17.227]}, {name: "Smolenice", coords: [48.513, 17.432]}, {name: "Gajary", coords: [48.468, 16.924]}] }
+            ],
+            "11": [
+                { day: "🗓️ DEŇ 1", main: {name: "Múzeum kultúry Chorvátov na Slovensku", coords: [48.205, 16.975]}, alt: [{name: "Chorvátsky Grob", coords: [48.226, 17.288]}, {name: "Jarovce / Čunovo", coords: [48.064, 17.113]}, {name: "Rusovce", coords: [48.056, 17.148]}] },
+                { day: "🗓️ DEŇ 2", main: {name: "Husacinárska reštaurácia v Chorvátskom / Slovenskom Grobe", coords: [48.261, 17.256]}, alt: [{name: "Pezinok", coords: [48.288, 17.266]}, {name: "Svätý Jur", coords: [48.253, 17.213]}, {name: "Modra", coords: [48.334, 17.309]}] },
+                { day: "🗓️ DEŇ 3", main: {name: "Malokarpatské vinohrady", coords: [48.212, 17.148]}, alt: [{name: "Modra", coords: [48.340, 17.310]}, {name: "Devín", coords: [48.173, 16.978]}, {name: "Vajnory", coords: [48.204, 17.208]}] }
+            ],
+            "12": [
+                { day: "🗓️ DEŇ 1", main: {name: "Hrad Devín", coords: [48.173, 16.978]}, alt: [{name: "Sad Janka Kráľa", coords: [48.135, 17.110]}, {name: "Bratislavský hrad", coords: [48.142, 17.100]}, {name: "Hrad Pajštún", coords: [48.273, 17.081]}] },
+                { day: "🗓️ DEŇ 2", main: {name: "Trnava", coords: [48.377, 17.587]}, alt: [{name: "Sereď", coords: [48.288, 17.738]}, {name: "Šurany", coords: [48.085, 18.185]}, {name: "Sládkovičovo", coords: [48.203, 17.639]}] },
+                { day: "🗓️ DEŇ 3", main: {name: "Historický sedliacky dvor", coords: [48.288, 17.266]}, alt: [{name: "Múzeum Červený Kameň", coords: [48.391, 17.335]}, {name: "Modra", coords: [48.334, 17.309]}, {name: "Abeland", coords: [48.256, 17.135]}] }
+            ],
+            "13": [
+                { day: "🗓️ DEŇ 1", main: {name: "Zvolenský zámok", coords: [48.572, 19.127]}, alt: [{name: "Bratislavský hrad", coords: [48.142, 17.101]}, {name: "Smolenický zámok", coords: [48.513, 17.432]}, {name: "Oravský hrad", coords: [49.261, 19.358]}] },
+                { day: "🗓️ DEŇ 2", main: {name: "Historická zámocká kuchyňa", coords: [48.142, 17.100]}, alt: [{name: "Červený Kameň", coords: [48.391, 17.335]}, {name: "Oponice", coords: [48.468, 18.148]}, {name: "Kaštieľ Mojmírovce", coords: [48.204, 18.061]}] },
+                { day: "🗓️ DEŇ 3", main: {name: "Záhrady Bratislavského hradu", coords: [48.142, 17.098]}, alt: [{name: "Zámocký park", coords: [48.300, 17.300]}, {name: "Arborétum Mlyňany", coords: [48.322, 18.368]}, {name: "Zámocký park Betliar", coords: [48.702, 20.509]}] }
+            ],
+            "14": [
+                { day: "🗓️ DEŇ 1", main: {name: "Zamagurie / Prístavisko pltí na Dunajci", coords: [49.395, 20.404]}, alt: [{name: "Plte na Váhu", coords: [49.176, 18.861]}, {name: "Orava", coords: [49.261, 19.358]}, {name: "Plte na rieke Poprad", coords: [49.300, 20.700]}] },
+                { day: "🗓️ DEŇ 2", main: {name: "Múzeum Červený Kláštor", coords: [49.396, 20.414]}, alt: [{name: "Skanzen Stará Ľubovňa", coords: [49.314, 20.697]}, {name: "Oravský podzámok", coords: [49.261, 19.357]}, {name: "Múzeum oravskej dediny Zuberec", coords: [49.259, 19.662]}] },
+                { day: "🗓️ DEŇ 3", main: {name: "Goralský dvor", coords: [49.375, 20.457]}, alt: [{name: "Lendak", coords: [49.237, 20.352]}, {name: "Osturňa", coords: [49.333, 20.244]}, {name: "Salaš v Bachledovej doline", coords: [49.274, 20.306]}] }
+            ],
+            "15": [
+                { day: "🗓️ DEŇ 1", main: {name: "Tržnica Miletičova", coords: [48.155, 17.138]}, alt: [{name: "Tržnica Trnavské Mýto", coords: [48.158, 17.129]}, {name: "Stará Vajnorská", coords: [48.188, 17.185]}, {name: "Tržnica Žilinská", coords: [48.156, 17.109]}] },
+                { day: "🗓️ DEŇ 2", main: {name: "Areál bývalých závodov ZDA Partizánske alebo Svit", coords: [48.626, 18.374]}, alt: [{name: "Cvernovka", coords: [48.177, 17.126]}, {name: "Múzeum obuvi", coords: [48.627, 18.374]}, {name: "Makyta Púchov", coords: [49.123, 18.328]}] }
+            ]
+        };
+
+        var markersGroup = L.featureGroup().addTo(map);
+        var activeMarkers = {};
+
+        function focusMarker(id) {
+            document.querySelectorAll('.loc-item').forEach(el => el.classList.remove('active'));
+            var listItem = document.getElementById(id);
+            if(listItem) {
+                listItem.classList.add('active');
+                listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            for (var key in activeMarkers) {
+                var mData = activeMarkers[key];
+                mData.marker.setIcon(mData.originalIcon);
+                mData.marker.setZIndexOffset(mData.baseZIndex);
+                
+                var tooltipNode = mData.marker.getTooltip().getElement();
+                if(tooltipNode) {
+                    tooltipNode.classList.remove('active-tooltip');
+                    tooltipNode.style.zIndex = mData.baseZIndex; 
+                }
+            }
+            
+            if (activeMarkers[id]) {
+                var mData = activeMarkers[id];
+                mData.marker.setIcon(highlightIcon);
+                mData.marker.setZIndexOffset(9999999);
+                
+                var tooltipNode = mData.marker.getTooltip().getElement();
+                if(tooltipNode) {
+                    tooltipNode.classList.add('active-tooltip');
+                    tooltipNode.style.zIndex = 9999999;
+                }
+            }
+        }
+
+        function loadEpisode(episodeId) {
+            markersGroup.clearLayers();
+            activeMarkers = {};
+            var bounds = [];
+            var listHtml = "";
+            var data = episodesData[episodeId];
+            var itemCounter = 0;
+            
+            var markerObjects = [];
+
+            data.forEach(function(dayData) {
+                listHtml += `<div class="day-group">`;
+                listHtml += `<div class="day-title">${dayData.day}</div>`;
+                
+                var mId = 'loc-' + itemCounter++;
+                listHtml += `<div class="loc-type">Hlavná lokácia</div>`;
+                listHtml += `<div class="loc-item main" id="${mId}" onclick="focusMarker('${mId}')">${dayData.main.name}</div>`;
+                
+                var markerMain = L.marker(dayData.main.coords, {icon: redIcon})
+                    .bindTooltip(dayData.main.name, { permanent: true, interactive: true, direction: 'right', className: 'main-label', offset: [10, -10] })
+                    .on('click', function() { focusMarker(mId); });
+                markersGroup.addLayer(markerMain);
+                markerObjects.push({ id: mId, name: dayData.main.name, isMain: true, marker: markerMain, originalIcon: redIcon });
+                bounds.push(dayData.main.coords);
+
+                listHtml += `<div class="loc-type">Alternatívy</div>`;
+                dayData.alt.forEach(function(altLoc) {
+                    var aId = 'loc-' + itemCounter++;
+                    listHtml += `<div class="loc-item alt" id="${aId}" onclick="focusMarker('${aId}')">${altLoc.name}</div>`;
+                    
+                    var markerAlt = L.marker(altLoc.coords, {icon: blueIcon})
+                        .bindTooltip(altLoc.name, { permanent: true, interactive: true, direction: 'right', className: 'alt-label', offset: [10, -10] })
+                        .on('click', function() { focusMarker(aId); });
+                    markersGroup.addLayer(markerAlt);
+                    markerObjects.push({ id: aId, name: altLoc.name, isMain: false, marker: markerAlt, originalIcon: blueIcon });
+                    bounds.push(altLoc.coords);
+                });
+                
+                listHtml += `</div>`;
+            });
+
+            document.getElementById('locations-list').innerHTML = listHtml;
+
+            var sortedMarkers = markerObjects.slice().sort(function(a, b) {
+                if (a.isMain && !b.isMain) return -1;
+                if (!a.isMain && b.isMain) return 1;
+                return a.name.localeCompare(b.name, 'sk');
+            });
+
+            sortedMarkers.forEach(function(item, index) {
+                var baseZ = (sortedMarkers.length - index) * 10000;
+                if (item.isMain) baseZ += 1000000; 
+
+                item.marker.setZIndexOffset(baseZ);
+                activeMarkers[item.id] = {
+                    marker: item.marker,
+                    originalIcon: item.originalIcon,
+                    baseZIndex: baseZ
+                };
+
+                var tooltipNode = item.marker.getTooltip().getElement();
+                if(tooltipNode) {
+                    tooltipNode.style.zIndex = baseZ; 
+                }
+            });
+
+            if(bounds.length > 0) {
+                map.fitBounds(bounds, { 
+                    paddingTopLeft: [50, 50], 
+                    paddingBottomRight: [380, 50], 
+                    maxZoom: 11 
+                });
+            }
+        }
+
+        loadEpisode("1");
+
+        document.getElementById("episode-select").addEventListener("change", function(e) {
+            loadEpisode(e.target.value);
+        });
+
+    </script>
+</body>
+</html>
