@@ -119,7 +119,7 @@
 
     <div class="sidebar">
         <select id="episode-select">
-            <option value="1" selected>Epizóda 1: Turci</option>
+            <option value="1">Epizóda 1: Turci</option>
             <option value="2">Epizóda 2: Valasi</option>
             <option value="3">Epizóda 3: Nemci</option>
             <option value="4">Epizóda 4: Maďarskí bratia</option>
@@ -288,7 +288,15 @@
             }
         }
 
-        function loadEpisode(episodeId) {
+        function loadEpisode(episodeId, updateHash = true) {
+            if (!episodesData[episodeId]) episodeId = "1";
+            
+            document.getElementById("episode-select").value = episodeId;
+
+            if (updateHash) {
+                window.location.hash = episodeId;
+            }
+
             markersGroup.clearLayers();
             activeMarkers = {};
             var bounds = [];
@@ -363,10 +371,17 @@
             }
         }
 
-        loadEpisode("1");
+        // Kontrola pri načítaní stránky, či je v adrese odkaz na konkrétnu epizódu (napr. adresa.html#8)
+        var initialEpisode = "1";
+        var hash = window.location.hash.replace("#", "");
+        if (hash && episodesData[hash]) {
+            initialEpisode = hash;
+        }
+
+        loadEpisode(initialEpisode, false);
 
         document.getElementById("episode-select").addEventListener("change", function(e) {
-            loadEpisode(e.target.value);
+            loadEpisode(e.target.value, true);
         });
 
     </script>
