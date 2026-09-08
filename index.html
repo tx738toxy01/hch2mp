@@ -89,6 +89,13 @@
         .loc-item.main { border-left: 4px solid #cc0000; }
         .loc-item.alt { border-left: 4px solid #0000cc; }
 
+        .loc-item.barbara { border-left: 4px solid #2e7d32; }
+        .barbara-label {
+            background: transparent; border: none; box-shadow: none; font-weight: bold; font-size: 12px;
+            color: #2e7d32; text-shadow: 2px 2px 0px white, -2px -2px 0px white, 2px -2px 0px white, -2px 2px 0px white;
+        }
+
+
         .main-label {
             background: transparent; border: none; box-shadow: none; font-weight: bold; font-size: 14px;
             color: #cc0000; text-shadow: 2px 2px 0px white, -2px -2px 0px white, 2px -2px 0px white, -2px 2px 0px white;
@@ -161,6 +168,16 @@
                 padding: 8px;
             }
         }
+    
+        .barbara-loc {
+            background: #e3f2fd;
+            border-left: 4px solid #1976d2;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
     </style>
 </head>
 <body>
@@ -188,6 +205,7 @@
             <div class="legend-item"><img class="legend-img" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png" alt="red"><b>Hlavné</b></div>
             <div class="legend-item"><img class="legend-img" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png" alt="blue"><b>Alternatívy</b></div>
             <div class="legend-item"><img class="legend-img" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-gold.png" alt="gold"><b>Vybrané</b></div>
+        <div class="legend-item"><img class="legend-img" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png" alt="green"><b>Barbara</b></div>
         </div>
 
         <div class="list-container" id="locations-list"></div>
@@ -228,6 +246,16 @@
             shadowSize: [41 * iconScale, 41 * iconScale]
         });
 
+        
+        var lightGreenIcon = new L.Icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25 * iconScale, 41 * iconScale], 
+            iconAnchor: [12 * iconScale, 41 * iconScale], 
+            popupAnchor: [1, -34 * iconScale], 
+            shadowSize: [41 * iconScale, 41 * iconScale]
+        });
+
         var highlightIcon = new L.Icon({
             iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-gold.png',
             shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
@@ -238,82 +266,151 @@
         });
 
         var episodesData = {
-            "1": [
-                { day: "🗓️ DEŇ 1", main: {name: "Fiľakovský hrad", coords: [48.271, 19.824]}, alt: [{name: "Hrad Šomoška", coords: [48.171, 19.856]}, {name: "Hrad Modrý Kameň", coords: [48.243, 19.333]}, {name: "Hrad Čabraď", coords: [48.243, 19.103]}] },
-                { day: "🗓️ DEŇ 2", main: {name: "Františkánsky kláštor Fiľakovo", coords: [48.270, 19.826]}, alt: [{name: "Kláštor Bzovík", coords: [48.318, 19.088]}, {name: "Kláštor Hronský Beňadik", coords: [48.344, 18.557]}, {name: "Zámok Halič", coords: [48.358, 19.575]}] },
-                { day: "🗓️ DEŇ 3", main: {name: "Zámok Halič", coords: [48.358, 19.575]}, alt: [{name: "Kaštieľ Divín", coords: [48.448, 19.531]}, {name: "Kaštieľ Svätý Anton", coords: [48.422, 18.940]}, {name: "Zvolenský zámok", coords: [48.572, 19.127]}] }
-            ],
-            "2": [
-                { day: "🗓️ DEŇ 1", main: {name: "Salaš Zbojská", coords: [48.727, 19.854]}, alt: [{name: "Salaš Krajinka", coords: [49.091, 19.263]}, {name: "Salaš Syrex", coords: [49.278, 19.187]}, {name: "Koliba u dobrého pastiera", coords: [49.073, 19.231]}] },
-                { day: "🗓️ DEŇ 2", main: {name: "Historické lazy Podpoľania", coords: [48.564, 19.418]}, alt: [{name: "Múzeum oravskej dediny Zuberec", coords: [49.259, 19.662]}, {name: "Skanzen Vychylovka", coords: [49.382, 19.096]}, {name: "Skanzen Pribylina", coords: [49.106, 19.799]}] },
-                { day: "🗓️ DEŇ 3", main: {name: "Príroda Karpát", coords: [48.694, 19.682]}, alt: [{name: "Jánošíkove diery", coords: [49.257, 19.066]}, {name: "Kráľova hoľa", coords: [48.882, 20.139]}, {name: "Zádielska tiesňava", coords: [48.618, 20.827]}] }
-            ],
-            "3": [
-                { day: "🗓️ DEŇ 1", main: {name: "Spišská Sobota", coords: [49.065, 20.315]}, alt: [{name: "Banská Štiavnica", coords: [48.459, 18.893]}, {name: "Kremnica", coords: [48.704, 18.917]}, {name: "Kežmarok", coords: [49.133, 20.433]}] },
-                { day: "🗓️ DEŇ 2", main: {name: "Spišské múzeum v Levoči", coords: [49.025, 20.589]}, alt: [{name: "Thurzov dom Levoča", coords: [49.026, 20.589]}, {name: "Kostol Kežmarok", coords: [49.133, 20.430]}, {name: "Starý zámok B. Štiavnica", coords: [48.458, 18.890]}] },
-                { day: "🗓️ DEŇ 3", main: {name: "Banské múzeum v prírode", coords: [48.458, 18.893]}, alt: [{name: "Exteriéry Spišskej Novej Vsi", coords: [48.944, 20.568]}, {name: "Štôlňa Bartolomej", coords: [48.455, 18.895]}, {name: "Exteriéry Ľubietová", coords: [48.744, 19.362]}] }
-            ],
-            "4": [
-                { day: "🗓️ DEŇ 1", main: {name: "Kaštieľ Borša", coords: [48.381, 21.705]}, alt: [{name: "Kaštieľ Betliar", coords: [48.702, 20.509]}, {name: "Kráľovský Chlmec", coords: [48.423, 21.980]}, {name: "Kaštieľ v Trebišove", coords: [48.621, 21.722]}] },
-                { day: "🗓️ DEŇ 2", main: {name: "Breh rieky Bodrog", coords: [48.390, 21.680]}, alt: [{name: "Mŕtve rameno Tajba", coords: [48.375, 21.785]}, {name: "Senecké jazerá", coords: [48.219, 17.419]}, {name: "Brehy rieky Latorica", coords: [48.497, 21.936]}] },
-                { day: "🗓️ DEŇ 3", main: {name: "Dóm sv. Alžbety", coords: [48.720, 21.257]}, alt: [{name: "Hlavná ulica Košice", coords: [48.721, 21.258]}, {name: "Východoslovenské múzeum", coords: [48.726, 21.253]}, {name: "Katova bašta", coords: [48.722, 21.261]}] }
-            ],
-            "5": [
-                { day: "🗓️ DEŇ 1", main: {name: "Housův mlýn Tábor", coords: [49.417, 14.659]}, alt: [{name: "Husitské múzeum Tábor", coords: [49.414, 14.658]}, {name: "Kozí Hrádek", coords: [49.390, 14.723]}, {name: "Hrad Kotnov", coords: [49.411, 14.655]}] },
-                { day: "🗓️ DEŇ 2", main: {name: "Hrad Branč", coords: [48.730, 17.461]}, alt: [{name: "Topoľčiansky hrad", coords: [48.660, 18.049]}, {name: "Hrad Korlátka", coords: [48.575, 17.386]}, {name: "Hrad Dobrá Voda", coords: [48.608, 17.525]}] },
-                { day: "🗓️ DEŇ 3", main: {name: "Gazdovský dvor Turá Lúka", coords: [48.737, 17.534]}, alt: [{name: "Skanzen Strážnice", coords: [48.905, 17.310]}, {name: "Skanzen Myjava", coords: [48.750, 17.568]}, {name: "Gazdovský dvor Vrbovce", coords: [48.796, 17.467]}] }
-            ],
-            "6": [
-                { day: "🗓️ DEŇ 1", main: {name: "Židovská náboženská obec Bratislava", coords: [48.144, 17.106]}, alt: [{name: "Múzeum židovskej kultúry SNM", coords: [48.142, 17.103]}, {name: "Pamätník Chatama Sofera", coords: [48.141, 17.092]}, {name: "Synagóga v Stupave", coords: [48.274, 17.032]}] },
-                { day: "🗓️ DEŇ 2", main: {name: "Slovenský Grob", coords: [48.261, 17.256]}, alt: [{name: "Synagóga Trnava", coords: [48.377, 17.589]}, {name: "Nitra", coords: [48.312, 18.089]}, {name: "Vinohradnícky dom Pezinok", coords: [48.288, 17.266]}] },
-                { day: "🗓️ DEŇ 3", main: {name: "Stará Tržnica Bratislava", coords: [48.144, 17.111]}, alt: [{name: "Košice", coords: [48.720, 21.258]}, {name: "Komárno", coords: [47.760, 18.125]}, {name: "Synagóga v Nových Zámkoch", coords: [47.986, 18.163]}] }
-            ],
-            "7": [
-                { day: "🗓️ DEŇ 1", main: {name: "Zemplínsky hrad", coords: [48.441, 21.815]}, alt: [{name: "Hrad Brekov", coords: [48.902, 21.832]}, {name: "Jasov", coords: [48.681, 20.975]}, {name: "Hradište v Tibave", coords: [48.739, 22.285]}] },
-                { day: "🗓️ DEŇ 2", main: {name: "Spišský hrad", coords: [49.000, 20.768]}, alt: [{name: "Hrad Ľubovňa", coords: [49.314, 20.697]}, {name: "Podolínec", coords: [49.258, 20.534]}, {name: "Kežmarský hrad", coords: [49.139, 20.433]}] },
-                { day: "🗓️ DEŇ 3", main: {name: "Prírodná scenéria Košice-okolie", coords: [48.614, 20.829]}, alt: [{name: "Zádiel", coords: [48.618, 20.827]}, {name: "Hradisko Valaliky", coords: [48.636, 21.272]}, {name: "Archeoskanzen Nižná Myšľa", coords: [48.629, 21.325]}] }
-            ],
-            "8": [
-                { day: "🗓️ DEŇ 1", main: {name: "Skanzen Svidník", coords: [49.308, 21.566]}, alt: [{name: "Skanzen Humenné", coords: [48.940, 21.905]}, {name: "Múzeum ľudovej architektúry Bardejovské Kúpele", coords: [49.329, 21.267]}, {name: "Skanzen pod Ľubovnianskym hradom", coords: [49.314, 20.697]}] },
-                { day: "🗓️ DEŇ 2", main: {name: "Múzeum rusínskej kultúry", coords: [48.998, 21.239]}, alt: [{name: "Ladomirová", coords: [49.328, 21.621]}, {name: "Sninský kaštieľ", coords: [48.986, 22.152]}, {name: "Hervartov", coords: [49.246, 21.203]}] },
-                { day: "🗓️ DEŇ 3", main: {name: "Drevená dedinka v okolí Bardejova", coords: [49.293, 21.275]}, alt: [{name: "Východné Karpaty - Poloniny", coords: [49.050, 22.350]}, {name: "Tokajík", coords: [49.109, 21.710]}, {name: "Obec Runina", coords: [49.071, 22.404]}] }
-            ],
-            "9": [
-                { day: "🗓️ DEŇ 1", main: {name: "Historický dvor", coords: [48.330, 19.664]}, alt: [{name: "Múzeum rómskej kultúry SNM Martin", coords: [49.034, 18.932]}, {name: "Skanzen Rožňava", coords: [48.664, 20.532]}, {name: "Dvor vo Fiľakove", coords: [48.271, 19.824]}] },
-                { day: "🗓️ DEŇ 2", main: {name: "Panský kaštieľ alebo mestské korzo", coords: [48.720, 21.257]}, alt: [{name: "Levický hrad", coords: [48.222, 18.595]}, {name: "Historická Nitra", coords: [48.312, 18.089]}, {name: "Park kaštieľa Betliar", coords: [48.702, 20.509]}] },
-                { day: "🗓️ DEŇ 3", main: {name: "Ranč", coords: [48.000, 18.000]}, alt: [{name: "Podunajsko", coords: [47.850, 17.550]}, {name: "Abov", coords: [48.600, 21.200]}, {name: "Lúky na Gemeri", coords: [48.665, 20.536]}] }
-            ],
-            "10": [
-                { day: "🗓️ DEŇ 1", main: {name: "Habánsky dvor Veľké Leváre", coords: [48.502, 17.001]}, alt: [{name: "Habánsky dvor Sobotište", coords: [48.730, 17.404]}, {name: "Moravský Svätý Ján", coords: [48.587, 16.999]}, {name: "Majolika Modra", coords: [48.334, 17.309]}] },
-                { day: "🗓️ DEŇ 2", main: {name: "Historický mlyn alebo sušiareň na Záhorí", coords: [48.551, 17.105]}, alt: [{name: "Schaubmarov mlyn", coords: [48.272, 17.262]}, {name: "Holíčsky zámok", coords: [48.810, 17.159]}, {name: "Mlyny Oblazy", coords: [49.172, 19.539]}] },
-                { day: "🗓️ DEŇ 3", main: {name: "Interiér múzea vo Veľkých Levároch", coords: [48.502, 17.000]}, alt: [{name: "Skalica", coords: [48.844, 17.227]}, {name: "Smolenice", coords: [48.513, 17.432]}, {name: "Gajary", coords: [48.468, 16.924]}] }
-            ],
-            "11": [
-                { day: "🗓️ DEŇ 1", main: {name: "Múzeum kultúry Chorvátov na Slovensku", coords: [48.205, 16.975]}, alt: [{name: "Chorvátsky Grob", coords: [48.226, 17.288]}, {name: "Jarovce / Čunovo", coords: [48.064, 17.113]}, {name: "Rusovce", coords: [48.056, 17.148]}] },
-                { day: "🗓️ DEŇ 2", main: {name: "Husacinárska reštaurácia v Chorvátskom / Slovenskom Grobe", coords: [48.261, 17.256]}, alt: [{name: "Pezinok", coords: [48.288, 17.266]}, {name: "Svätý Jur", coords: [48.253, 17.213]}, {name: "Modra", coords: [48.334, 17.309]}] },
-                { day: "🗓️ DEŇ 3", main: {name: "Malokarpatské vinohrady", coords: [48.212, 17.148]}, alt: [{name: "Modra", coords: [48.340, 17.310]}, {name: "Devín", coords: [48.173, 16.978]}, {name: "Vajnory", coords: [48.204, 17.208]}] }
-            ],
-            "12": [
-                { day: "🗓️ DEŇ 1", main: {name: "Hrad Devín", coords: [48.173, 16.978]}, alt: [{name: "Sad Janka Kráľa", coords: [48.135, 17.110]}, {name: "Bratislavský hrad", coords: [48.142, 17.100]}, {name: "Hrad Pajštún", coords: [48.273, 17.081]}] },
-                { day: "🗓️ DEŇ 2", main: {name: "Trnava", coords: [48.377, 17.587]}, alt: [{name: "Sereď", coords: [48.288, 17.738]}, {name: "Šurany", coords: [48.085, 18.185]}, {name: "Sládkovičovo", coords: [48.203, 17.639]}] },
-                { day: "🗓️ DEŇ 3", main: {name: "Historický sedliacky dvor", coords: [48.288, 17.266]}, alt: [{name: "Múzeum Červený Kameň", coords: [48.391, 17.335]}, {name: "Modra", coords: [48.334, 17.309]}, {name: "Abeland", coords: [48.256, 17.135]}] }
-            ],
-            "13": [
-                { day: "🗓️ DEŇ 1", main: {name: "Zvolenský zámok", coords: [48.572, 19.127]}, alt: [{name: "Bratislavský hrad", coords: [48.142, 17.101]}, {name: "Smolenický zámok", coords: [48.513, 17.432]}, {name: "Oravský hrad", coords: [49.261, 19.358]}] },
-                { day: "🗓️ DEŇ 2", main: {name: "Historická zámocká kuchyňa", coords: [48.142, 17.100]}, alt: [{name: "Červený Kameň", coords: [48.391, 17.335]}, {name: "Oponice", coords: [48.468, 18.148]}, {name: "Kaštieľ Mojmírovce", coords: [48.204, 18.061]}] },
-                { day: "🗓️ DEŇ 3", main: {name: "Záhrady Bratislavského hradu", coords: [48.142, 17.098]}, alt: [{name: "Zámocký park", coords: [48.300, 17.300]}, {name: "Arborétum Mlyňany", coords: [48.322, 18.368]}, {name: "Zámocký park Betliar", coords: [48.702, 20.509]}] }
-            ],
-            "14": [
-                { day: "🗓️ DEŇ 1", main: {name: "Zamagurie / Prístavisko pltí na Dunajci", coords: [49.395, 20.404]}, alt: [{name: "Plte na Váhu", coords: [49.176, 18.861]}, {name: "Orava", coords: [49.261, 19.358]}, {name: "Plte na rieke Poprad", coords: [49.300, 20.700]}] },
-                { day: "🗓️ DEŇ 2", main: {name: "Múzeum Červený Kláštor", coords: [49.396, 20.414]}, alt: [{name: "Skanzen Stará Ľubovňa", coords: [49.314, 20.697]}, {name: "Oravský podzámok", coords: [49.261, 19.357]}, {name: "Múzeum oravskej dediny Zuberec", coords: [49.259, 19.662]}] },
-                { day: "🗓️ DEŇ 3", main: {name: "Goralský dvor", coords: [49.375, 20.457]}, alt: [{name: "Lendak", coords: [49.237, 20.352]}, {name: "Osturňa", coords: [49.333, 20.244]}, {name: "Salaš v Bachledovej doline", coords: [49.274, 20.306]}] }
-            ],
-            "15": [
-                { day: "🗓️ DEŇ 1", main: {name: "Tržnica Miletičova", coords: [48.155, 17.138]}, alt: [{name: "Tržnica Trnavské Mýto", coords: [48.158, 17.129]}, {name: "Stará Vajnorská", coords: [48.188, 17.185]}, {name: "Tržnica Žilinská", coords: [48.156, 17.109]}] },
-                { day: "🗓️ DEŇ 2", main: {name: "Areál bývalých závodov ZDA Partizánske alebo Svit", coords: [48.626, 18.374]}, alt: [{name: "Cvernovka", coords: [48.177, 17.126]}, {name: "Múzeum obuvi", coords: [48.627, 18.374]}, {name: "Makyta Púchov", coords: [49.123, 18.328]}] },
-                { day: "🗓️ DEŇ 3", main: {name: "Fresh Market - Tradičné ázijské bistro", coords: [48.167, 17.152]}, alt: [{name: "Tržnica Nivy", coords: [48.147, 17.128]}, {name: "Rodinná bylinková záhrada", coords: [48.120, 17.230]}, {name: "Ázijské potraviny", coords: [48.182, 17.195]}] }
-            ]
-        };
+    "1": [
+        { day: "🗓️ DEŇ 1", main: {name: "Fiľakovský hrad", coords: [48.271, 19.824], contact: "info@hradfilakovo.sk | 047/43 82 017"}, alt: [{name: "Hrad Šomoška", coords: [48.171, 19.856], contact: "047/449 11 54"}, {name: "Hrad Modrý Kameň", coords: [48.243, 19.333], contact: "hradmodrykamen@snm.sk | +421 47 2454 100"}, {name: "Hrad Čabraď", coords: [48.243, 19.103], contact: "tomasik.r86@gmail.com"}] },
+        { day: "🗓️ DEŇ 2", main: {name: "Františkánsky kláštor Fiľakovo", coords: [48.270, 19.826], contact: "+421 47 438 10 16 | klastorfil@frantiskani.sk"}, alt: [{name: "Kláštor Bzovík", coords: [48.318, 19.088], contact: "045 55 19 397 | obecnyuradbzovik@gmail.com"}, {name: "Kláštor Hronský Beňadik", coords: [48.344, 18.557], contact: "Farnosť Hronský Beňadik"}, {name: "Zámok Halič", coords: [48.358, 19.575], contact: "recepcia@hotelgalicianueva.sk | +421 47 285 22 00"}] },
+        { day: "🗓️ DEŇ 3", main: {name: "Zámok Halič", coords: [48.358, 19.575], contact: "recepcia@hotelgalicianueva.sk | +421 47 285 22 00"}, alt: [{name: "Kaštieľ Divín", coords: [48.448, 19.531], contact: "kultura@divin.sk | +421 948 440 428"}, {name: "Kaštieľ Svätý Anton", coords: [48.422, 18.940], contact: "info@msa.sk | +421 45 691 39 32"}, {name: "Zvolenský zámok", coords: [48.572, 19.127], contact: "zvolen@sng.sk | 045 53 21 903"}] },
+        { day: "👩 Barbara lokácie", main: null, alt: [
+            {name: "Koháryho kúria vo Fiľakove", coords: [48.272, 19.825]}, 
+            {name: "Hradné múzeum vo Fiľakove", coords: [48.271, 19.823]}
+        ], text: "Koháryho kúria vo Fiľakove (Marian Mesiarik: 0908633935), Hradné múzeum vo Fiľakove (muzeum@hradfilakovo.sk)" }
+    ],
+    "2": [
+        { day: "🗓️ DEŇ 1", main: {name: "Salaš Zbojská", coords: [48.727, 19.854], contact: "zbojska@zbojska.sk | +421 910 418 788"}, alt: [{name: "Salaš Krajinka", coords: [49.091, 19.263], contact: "salaskrajinka@gmail.com | +421 915 803 444"}, {name: "Salaš Syrex", coords: [49.278, 19.187], contact: "info@syrex.sk | +421 905 500 500"}, {name: "Koliba u dobrého pastiera", coords: [49.073, 19.231], contact: "recepcia@udobrehopastiera.sk"}] },
+        { day: "🗓️ DEŇ 2", main: {name: "Historické lazy Podpoľania", coords: [48.564, 19.418], contact: "info@regionpodpolanie.sk | +421 948 874 635"}, alt: [{name: "Múzeum oravskej dediny Zuberec", coords: [49.259, 19.662], contact: "muzeum@zuberec.sk | +421 43 5395 149"}, {name: "Skanzen Vychylovka", coords: [49.382, 19.096], contact: "+421 41 439 72 19"}, {name: "Skanzen Pribylina", coords: [49.106, 19.799], contact: "skanzenpribylina@liptovskemuzeum.sk | +421 44 228 99 23"}] },
+        { day: "🗓️ DEŇ 3", main: {name: "Príroda Karpát", coords: [48.694, 19.682], contact: "Štátna ochrana prírody SR: +421 48 433 18 11"}, alt: [{name: "Jánošíkove diery", coords: [49.257, 19.066], contact: "janosikovediery@gmail.com | +421 905 324 428"}, {name: "Kráľova hoľa", coords: [48.882, 20.139], contact: "podatelna@napant.sk"}, {name: "Zádielska tiesňava", coords: [48.618, 20.827], contact: "npslovenskykras@sopsr.sk"}] },
+        { day: "👩 Barbara lokácie", main: null, alt: [
+            {name: "Rožnov pod Radhoštěm", coords: [49.461, 18.148]},
+            {name: "Skanzen Čičmany", coords: [48.955, 18.516]},
+            {name: "Terchová", coords: [49.256, 19.030]},
+            {name: "Podpolianske múzeum (Detva)", coords: [48.562, 19.419]},
+            {name: "Vagačov dom", coords: [48.560, 19.418]},
+            {name: "Zvolenská Slatina", coords: [48.564, 19.272]}
+        ], text: "Rožnov pod Radhoštěm (+420 571 757 111), Skanzen Čičmany (0918 187 683), Terchová (0904 098 285), Podpolianske múzeum (045/5455 502), Vagačov dom (0911 033 646), Zvolenská Slatina" }
+    ],
+    "3": [
+        { day: "🗓️ DEŇ 1", main: {name: "Kremnica / Banská Štiavnica", coords: [48.704, 18.917], contact: "infocentrum@kremnica.sk | +421 45 6742 856 / tic@banskastiavnica.sk"}, alt: [{name: "Spišská Sobota", coords: [49.065, 20.315], contact: "Natáčanie na dvore penziónu rieši produkcia lokálne v Poprade"}, {name: "Kežmarok", coords: [49.133, 20.433], contact: "info@kezmarok.sk"}] },
+        { day: "🗓️ DEŇ 2", main: {name: "Starý zámok, Banská Štiavnica", coords: [48.458, 18.890], contact: "sbm@muzeumbs.sk | 045/694 94 22"}, alt: [{name: "Spišské múzeum v Levoči", coords: [49.025, 20.589], contact: "info@spisskemuzeum.com | +421 53 2456 777"}, {name: "Thurzov dom Levoča", coords: [49.026, 20.589], contact: "info@spisskemuzeum.com"}, {name: "Kostol Kežmarok", coords: [49.133, 20.430], contact: "ecavkk@gmail.com"}] },
+        { day: "🗓️ DEŇ 3", main: {name: "Banské múzeum v prírode", coords: [48.458, 18.893], contact: "sbm@muzeumbs.sk | 045/694 94 22"}, alt: [{name: "Exteriéry Spišskej Novej Vsi", coords: [48.944, 20.568], contact: "tic@spisskanovaves.eu"}, {name: "Štôlňa Bartolomej", coords: [48.455, 18.895], contact: "sbm@muzeumbs.sk"}, {name: "Exteriéry Ľubietová", coords: [48.744, 19.362], contact: "obec@lubietova.sk"}] },
+        { day: "👩 Barbara lokácie", main: null, alt: [
+            {name: "MsÚ v Kremnici", coords: [48.705, 18.918]},
+            {name: "Múzeum kultúry karpatských Nemcov", coords: [48.142, 17.103]}
+        ], text: "MsÚ v Kremnici (045/2289 714), Múzeum kultúry karpatských Nemcov (02/204 912 25)" }
+    ],
+    "4": [
+        { day: "🗓️ DEŇ 1", main: {name: "Kaštieľ Borša", coords: [48.381, 21.705], contact: "recepcia@borsikastely.eu"}, alt: [{name: "Kaštieľ Betliar", coords: [48.702, 20.509], contact: "info@muzeumbetliar.sk | +421 587 983 118"}, {name: "Kráľovský Chlmec", coords: [48.423, 21.980], contact: "tic@kralovskychlmec.sk"}, {name: "Kaštieľ v Trebišove", coords: [48.621, 21.722], contact: "0911 941 988"}] },
+        { day: "🗓️ DEŇ 2", main: {name: "Breh rieky Bodrog", coords: [48.390, 21.680], contact: "Lokáciu pri rieke s povolením na oheň dohodne produkcia"}, alt: [{name: "Mŕtve rameno Tajba", coords: [48.375, 21.785], contact: "Zabezpečuje CHKO Latorica"}, {name: "Senecké jazerá", coords: [48.219, 17.419], contact: "sprava@slnechnejazera.eu"}, {name: "Brehy rieky Latorica", coords: [48.497, 21.936], contact: "Správa povodia Bodrogu a Latorice"}] },
+        { day: "🗓️ DEŇ 3", main: {name: "Dóm sv. Alžbety", coords: [48.720, 21.257], contact: "guides@domsvalzbety.sk | +421 908 957 692"}, alt: [{name: "Hlavná ulica Košice", coords: [48.721, 21.258], contact: "Informačné centrum Košice"}, {name: "Východoslovenské múzeum", coords: [48.726, 21.253], contact: "info@vsmuzeum.sk | 055/6223 061"}, {name: "Katova bašta", coords: [48.722, 21.261], contact: "info@vsmuzeum.sk | 055/622 03 09"}] },
+        { day: "👩 Barbara lokácie", main: null, alt: [
+            {name: "Hrad Regéc", coords: [48.380, 21.343]},
+            {name: "Hrad Sárospatak", coords: [48.318, 21.572]},
+            {name: "Cukráreň Anka a Amorova cukráreň", coords: [48.721, 21.260]}
+        ], text: "Hrad Regéc (036 30 110 99 63), Hrad Sárospatak (036 47 311 083), Cukráreň Anka a Amorova cukráreň (Košice)" }
+    ],
+    "5": [
+        { day: "🗓️ DEŇ 1", main: {name: "Housův mlýn Tábor", coords: [49.417, 14.659], contact: "info@housuvmlyn.cz | +420 775 630 665"}, alt: [{name: "Husitské múzeum Tábor", coords: [49.414, 14.658], contact: "tabor@husitskemuzeum.cz | +420 381 252 242"}, {name: "Kozí Hrádek", coords: [49.390, 14.723], contact: "Správa hradu Sezimovo Ústí"}, {name: "Hrad Kotnov", coords: [49.411, 14.655], contact: "+420 381 252 242"}] },
+        { day: "🗓️ DEŇ 2", main: {name: "Hrad Branč", coords: [48.730, 17.461], contact: "info@najmiesta.sk | Obecný úrad Podbranč"}, alt: [{name: "Topoľčiansky hrad", coords: [48.660, 18.049], contact: "info@topolcianskyhrad.sk | +421 910 963 637"}, {name: "Hrad Korlátka", coords: [48.575, 17.386], contact: "OcÚ Horné Orešany | 033 558 61 02"}, {name: "Hrad Dobrá Voda", coords: [48.608, 17.525], contact: "dobravoda.starosta@gmail.com | +421335575004"}] },
+        { day: "🗓️ DEŇ 3", main: {name: "Gazdovský dvor Turá Lúka", coords: [48.737, 17.534], contact: "gazdovskydvortl@gmail.com | 0907 202 126"}, alt: [{name: "Skanzen Strážnice", coords: [48.905, 17.310], contact: "skanzen@nulk.cz | 608 837 644"}, {name: "Skanzen Myjava", coords: [48.750, 17.568], contact: "Súčasť Centra tradičnej kultúry Myjava"}, {name: "Gazdovský dvor Vrbovce", coords: [48.796, 17.467], contact: "Obec Vrbovce"}] },
+        { day: "👩 Barbara lokácie", main: null, alt: [
+            {name: "Zvolenský zámok", coords: [48.572, 19.127], contact: "zvolen@sng.sk | 045 53 21 903"},
+            {name: "Hrad Likava", coords: [49.091, 19.309]},
+            {name: "Pustý hrad a Mestský hrad Kremnica", coords: [48.704, 18.917]}
+        ], text: "Zvolenský zámok (045/245 30 01), Hrad Likava (0907 847 232), Pustý hrad a Mestský hrad Kremnica" }
+    ],
+    "6": [
+        { day: "🗓️ DEŇ 1", main: {name: "Židovská náboženská obec Bratislava", coords: [48.144, 17.106], contact: "znoba@znoba.sk | 02/5441-6949"}, alt: [{name: "Múzeum židovskej kultúry SNM", coords: [48.142, 17.103], contact: "mzk@snm.sk"}, {name: "Pamätník Chatama Sofera", coords: [48.141, 17.092], contact: "+421-2-5441 6949"}, {name: "Synagóga v Stupave", coords: [48.274, 17.032], contact: "Jewrope (združenie spravujúce synagógu)"}] },
+        { day: "🗓️ DEŇ 2", main: {name: "Slovenský Grob", coords: [48.261, 17.256], contact: "Cech husacinárov Slovenský Grob (M. Jajcay)"}, alt: [{name: "Synagóga Trnava", coords: [48.377, 17.589], contact: "info@synagoga.sk"}, {name: "Nitra", coords: [48.312, 18.089], contact: "TIC Nitra"}, {name: "Vinohradnícky dom Pezinok", coords: [48.288, 17.266], contact: "TIC Pezinok"}] },
+        { day: "🗓️ DEŇ 3", main: {name: "Stará Tržnica Bratislava", coords: [48.144, 17.111], contact: "trznica@staratrznica.sk"}, alt: [{name: "Košice", coords: [48.720, 21.258], contact: "ŽNO Košice"}, {name: "Komárno", coords: [47.760, 18.125], contact: "ŽNO Komárno (Menház)"}, {name: "Synagóga v Nových Zámkoch", coords: [47.986, 18.163], contact: "ŽNO Nové Zámky"}] },
+        { day: "👩 Barbara lokácie", main: null, alt: [
+            {name: "Múzeum slovenskej dediny v Martine", coords: [49.034, 18.932]},
+            {name: "Skalica", coords: [48.844, 17.227], contact: "zahorskemuzeum@zahorskemuzeum.sk | +421 34 664 42 05"},
+            {name: "Mikulov", coords: [48.805, 16.637]}
+        ], text: "Múzeum slovenskej dediny v Martine (043/2458 111), Skalica a Mikulov" }
+    ],
+    "7": [
+        { day: "🗓️ DEŇ 1", main: {name: "Zemplínsky hrad", coords: [48.441, 21.815], contact: "starosta@obeczemplin.sk | 056/679 84 57"}, alt: [{name: "Hrad Brekov", coords: [48.902, 21.832], contact: "brekov@brekov.sk"}, {name: "Jasov", coords: [48.681, 20.975], contact: "opatstvojasov@gmail.com | 055/466 41 06"}, {name: "Hradište v Tibave", coords: [48.739, 22.285], contact: "obectibava@gmail.com | 056/658 24 31"}] },
+        { day: "🗓️ DEŇ 2", main: {name: "Spišský hrad", coords: [49.000, 20.768], contact: "info@spisskemuzeum.com | +421 53 454 13 36"}, alt: [{name: "Hrad Ľubovňa", coords: [49.314, 20.697], contact: "info@hradlubovna.sk | +421 52 43 22 422"}, {name: "Podolínec", coords: [49.258, 20.534], contact: "msou@podolinec.eu"}, {name: "Kežmarský hrad", coords: [49.139, 20.433], contact: "info@kezmarok.com | +421 52 452 26 19"}] },
+        { day: "🗓️ DEŇ 3", main: {name: "Prírodná scenéria Košice-okolie", coords: [48.614, 20.829], contact: "Lokáciu a príslušné povolenia rieši lokačný manažér v exteriéri"}, alt: [{name: "Zádiel", coords: [48.618, 20.827], contact: "obeczadiel@gmail.com | 055/466 21 00"}, {name: "Hradisko Valaliky", coords: [48.636, 21.272], contact: "obec@valaliky.sk | 055/699 98 01"}, {name: "Archeoskanzen Nižná Myšľa", coords: [48.629, 21.325], contact: "info@niznamysla.sk | 055/698 01 24"}] },
+        { day: "👩 Barbara lokácie", main: null, alt: [
+            {name: "Zbojnícky hrad Prešov (Solivar)", coords: [48.986, 21.285]},
+            {name: "Veľký Kamenec", coords: [48.358, 21.805]},
+            {name: "Hrad Čičva", coords: [48.913, 21.739]}
+        ], text: "Mongolské jurty (mongolskejurty.sk), Zbojnícky hrad Prešov (Solivar), Veľký Kamenec a Čičva" }
+    ],
+    "8": [
+        { day: "🗓️ DEŇ 1", main: {name: "Skanzen Svidník", coords: [49.308, 21.566], contact: "svidnik@snm.sk | +421 54 245 10 01"}, alt: [{name: "Skanzen Humenné", coords: [48.940, 21.905], contact: "sekretariat@muzeumhumenne.sk | 057/775 22 40"}, {name: "Múzeum ľudovej architektúry Bardejovské Kúpele", coords: [49.329, 21.267], contact: "muzeum@muzeumbardejov.sk | +421 54 472 20 09"}, {name: "Skanzen pod Ľubovnianskym hradom", coords: [49.314, 20.697], contact: "info@hradlubovna.sk | +421 52 43 22 422"}] },
+        { day: "🗓️ DEŇ 2", main: {name: "Múzeum rusínskej kultúry", coords: [48.998, 21.239], contact: "mrk@snm.sk | +421 51 245 33 21"}, alt: [{name: "Ladomirová", coords: [49.328, 21.621], contact: "obecladomirova@gmail.com"}, {name: "Sninský kaštieľ", coords: [48.986, 22.152], contact: "kastiel@snina.sk | 057/ 756 18 93"}, {name: "Hervartov", coords: [49.246, 21.203], contact: "obec@hervartov.sk | +421 54 472 32 30"}] },
+        { day: "🗓️ DEŇ 3", main: {name: "Drevená dedinka v okolí Bardejova", coords: [49.293, 21.275], contact: "Lokačný manažér"}, alt: [{name: "Východné Karpaty - Poloniny", coords: [49.050, 22.350], contact: "sekretariat.nppoloniny@sopsr.sk"}, {name: "Tokajík", coords: [49.109, 21.710], contact: "obec@obectokajik.sk | +421 905 607 726"}, {name: "Obec Runina", coords: [49.071, 22.404], contact: "obecrunina@gmail.com | 057 769 81 21"}] },
+        { day: "👩 Barbara lokácie", main: null, alt: [
+            {name: "Drevený chrám (Topoľa)", coords: [49.044, 22.355]},
+            {name: "Kaštieľ Čertižné a Divadlo A. Duchnoviča", coords: [49.352, 21.821]},
+            {name: "Matica slovenská Martin", coords: [49.066, 18.922]},
+            {name: "Katedrála sv. Jána Krstiteľa (Prešov)", coords: [48.996, 21.240]}
+        ], text: "Drevený gréckokatolícký chrám sv. Michala Archanjela (Topoľa, 057/769 81 17), Kaštieľ Dobrianskych v Čertižnom, budova Matice slovenskej v Martine, Divadlo Alexandra Duchnoviča, Gréckokatolícka katedrála sv. Jána Krstiteľa v Prešove" }
+    ],
+    "9": [
+        { day: "🗓️ DEŇ 1", main: {name: "Historický dvor", coords: [48.330, 19.664], contact: "nmg@nmg.sk"}, alt: [{name: "Múzeum rómskej kultúry SNM Martin", coords: [49.034, 18.932], contact: "msd@snm.sk | +421 43 24 58 116"}, {name: "Skanzen Rožňava", coords: [48.664, 20.532], contact: "info@banmuz.sk"}, {name: "Dvor vo Fiľakove", coords: [48.271, 19.824], contact: "hradfilakovo@hradfilakovo.sk | 047/43 82 017"}] },
+        { day: "🗓️ DEŇ 2", main: {name: "Panský kaštieľ alebo mestské korzo", coords: [48.720, 21.257], contact: "Zabezpečenie kapely a lokácie rieši produkcia"}, alt: [{name: "Levický hrad", coords: [48.222, 18.595], contact: "tmlevice@muzeumlevice.sk"}, {name: "Historická Nitra", coords: [48.312, 18.089], contact: "info@nitra.sk"}, {name: "Park kaštieľa Betliar", coords: [48.702, 20.509], contact: "info@muzeumbetliar.sk"}] },
+        { day: "🗓️ DEŇ 3", main: {name: "Ranč", coords: [48.000, 18.000], contact: "Farma/Ranč v okolí (vyhľadá lokačný manažér)"}, alt: [{name: "Podunajsko", coords: [47.850, 17.550], contact: "info@podunajsko.com"}, {name: "Abov", coords: [48.600, 21.200], contact: "info@kosiceregion.com"}, {name: "Lúky na Gemeri", coords: [48.665, 20.536], contact: "info@regiongemer.sk"}] },
+        { day: "👩 Barbara lokácie", main: null, alt: [
+            {name: "Mestské múzeum Lučenec", coords: [48.330, 19.666]},
+            {name: "Kaštieľ vo Veľkom Blhu", coords: [48.448, 20.117]},
+            {name: "Komunitné centrum Mučín", coords: [48.236, 19.673]}
+        ], text: "Hradné múzeum vo Fiľakove (047/438 26 19), Mestské múzeum Lučenec a Radnica (0911 733 980), Múzeum slovenskej dediny Martin, Kaštieľ vo Veľkom Blhu, komunitné centrum Mučín" }
+    ],
+    "10": [
+        { day: "🗓️ DEŇ 1", main: {name: "Habánsky dvor Veľké Leváre", coords: [48.502, 17.001], contact: "ocuvl@levare.sk | 034 / 779 44 93"}, alt: [{name: "Habánsky dvor Sobotište", coords: [48.730, 17.404], contact: "sobotiste@sobotiste.sk"}, {name: "Moravský Svätý Ján", coords: [48.587, 16.999], contact: "info@moravskysvatyjan.sk"}, {name: "Majolika Modra", coords: [48.334, 17.309], contact: "+421 911 980 105"}] },
+        { day: "🗓️ DEŇ 2", main: {name: "Historický mlyn alebo sušiareň na Záhorí", coords: [48.551, 17.105], contact: "Produkčné zabezpečenie priestoru s tehlovou pecou"}, alt: [{name: "Schaubmarov mlyn", coords: [48.272, 17.262], contact: "schaubmarovmlyn@sng.sk | +421 33 640 40 35"}, {name: "Holíčsky zámok", coords: [48.810, 17.159], contact: "tikholic@holic.sk | 0907 657 884"}, {name: "Mlyny Oblazy", coords: [49.172, 19.539], contact: "oblazy@oblazy.sk"}] },
+        { day: "🗓️ DEŇ 3", main: {name: "Interiér múzea vo Veľkých Levároch", coords: [48.502, 17.000], contact: "ocuvl@levare.sk"}, alt: [{name: "Skalica", coords: [48.844, 17.227], contact: "zahorskemuzeum@zahorskemuzeum.sk | +421 34 664 42 05"}, {name: "Smolenice", coords: [48.513, 17.432], contact: "zamok-smolenice@savba.sk | +421 33 5586 193"}, {name: "Gajary", coords: [48.468, 16.924], contact: "gajary@gajary.sk"}] },
+        { day: "👩 Barbara lokácie", main: null, alt: [
+            {name: "Habánske múzeum Veľké Leváre", coords: [48.501, 17.002]},
+            {name: "Habánsky mlyn (Sobotište)", coords: [48.730, 17.405]},
+            {name: "Záhorské múzeum v Skalici", coords: [48.844, 17.228]}
+        ], text: "Habánske múzeum Veľké Leváre (034/779 44 93), Habánsky mlyn (0918438044), Záhorské múzeum v Skalici" }
+    ],
+    "11": [
+        { day: "🗓️ DEŇ 1", main: {name: "Múzeum kultúry Chorvátov na Slovensku", coords: [48.205, 16.975], contact: "02/204 931 02"}, alt: [{name: "Chorvátsky Grob", coords: [48.226, 17.288], contact: "02/322 230 01"}, {name: "Jarovce / Čunovo", coords: [48.064, 17.113], contact: "Úrad mestskej časti"}, {name: "Rusovce", coords: [48.056, 17.148], contact: "Úrad mestskej časti"}] },
+        { day: "🗓️ DEŇ 2", main: {name: "Husacinárska reštaurácia v Chorvátskom / Slovenskom Grobe", coords: [48.261, 17.256], contact: "Cech husacinárov"}, alt: [{name: "Pezinok", coords: [48.288, 17.266], contact: "TIC Pezinok"}, {name: "Svätý Jur", coords: [48.253, 17.213], contact: "TIC Svätý Jur"}, {name: "Modra", coords: [48.334, 17.309], contact: "TIC Modra"}] },
+        { day: "🗓️ DEŇ 3", main: {name: "Malokarpatské vinohrady", coords: [48.212, 17.148], contact: "Združenie vinárov"}, alt: [{name: "Modra", coords: [48.340, 17.310], contact: "TIC Modra"}, {name: "Devín", coords: [48.173, 16.978], contact: "Hrad Devín"}, {name: "Vajnory", coords: [48.204, 17.208], contact: "Miestny úrad"}] },
+        { day: "👩 Barbara lokácie", main: null, alt: [
+            {name: "Múzeum kultúry Chorvátov", coords: [48.206, 16.976]},
+            {name: "Chorvátsky Grob", coords: [48.226, 17.289], contact: "02/322 230 01"}
+        ], text: "Múzeum kultúry Chorvátov na Slovensku (02/204 931 02), Chorvátsky Grob, Chorvátsky kultúrny zväz na Slovensku, Múzeum slovenskej dediny, Múzeum ľudovej architektúry v Bardejove a Humennom" }
+    ],
+    "12": [
+        { day: "🗓️ DEŇ 1", main: {name: "Hrad Devín", coords: [48.173, 16.978], contact: "muzeum.devin@bratislava.sk"}, alt: [{name: "Sad Janka Kráľa", coords: [48.135, 17.110], contact: "Mesto Bratislava"}, {name: "Bratislavský hrad", coords: [48.142, 17.100], contact: "bratislavskyhrad@snm.sk | +421 2 2048 3110"}, {name: "Hrad Pajštún", coords: [48.273, 17.081], contact: "Lesy SR"}] },
+        { day: "🗓️ DEŇ 2", main: {name: "Trnava", coords: [48.377, 17.587], contact: "TIC Trnava"}, alt: [{name: "Sereď", coords: [48.288, 17.738], contact: "Mestské múzeum Sereď"}, {name: "Šurany", coords: [48.085, 18.185], contact: "Mestský úrad Šurany"}, {name: "Sládkovičovo", coords: [48.203, 17.639], contact: "Mestský úrad Sládkovičovo"}] },
+        { day: "🗓️ DEŇ 3", main: {name: "Historický sedliacky dvor", coords: [48.288, 17.266], contact: "Abeland (0911 11 22 33)"}, alt: [{name: "Múzeum Červený Kameň", coords: [48.391, 17.335], contact: "info@hradcervenykamen.sk"}, {name: "Modra", coords: [48.334, 17.309], contact: "TIC Modra"}, {name: "Abeland", coords: [48.256, 17.135], contact: "info@abeland.sk"}] },
+        { day: "👩 Barbara lokácie", main: null, alt: [], text: "Téma granadierskeho pochodu a cukrovej repy (už bolo spracované)" }
+    ],
+    "13": [
+        { day: "🗓️ DEŇ 1", main: {name: "Zvolenský zámok", coords: [48.572, 19.127], contact: "zvolen@sng.sk | 045 53 21 903"}, alt: [{name: "Bratislavský hrad", coords: [48.142, 17.101], contact: "bratislavskyhrad@snm.sk | +421 2 2048 3110"}, {name: "Smolenický zámok", coords: [48.513, 17.432], contact: "zamok-smolenice@savba.sk | +421 33 5586 193"}, {name: "Oravský hrad", coords: [49.261, 19.358], contact: "rezervacie@oravskemuzeum.sk | +421 43 581 61 51"}] },
+        { day: "🗓️ DEŇ 2", main: {name: "Historická zámocká kuchyňa", coords: [48.142, 17.100], contact: "Kulinársky historik / Kancelária NR SR"}, alt: [{name: "Červený Kameň", coords: [48.391, 17.335], contact: "info@hradcervenykamen.sk | +421 33 245 51 03"}, {name: "Oponice", coords: [48.468, 18.148], contact: "info@chateauappony.sk | +421 38 323 81 11"}, {name: "Kaštieľ Mojmírovce", coords: [48.204, 18.061], contact: "recepcia@kastielmojmirovce.sk | +421 37 77 98 201"}] },
+        { day: "🗓️ DEŇ 3", main: {name: "Záhrady Bratislavského hradu", coords: [48.142, 17.098], contact: "info@nrsr.sk | Kancelária NR SR"}, alt: [{name: "Zámocký park", coords: [48.300, 17.300], contact: "Lokačný manažér hľadá podľa ročného obdobia"}, {name: "Arborétum Mlyňany", coords: [48.322, 18.368], contact: "arboretum.mlynany@savba.sk | +421 37 633 45 71"}, {name: "Zámocký park Betliar", coords: [48.702, 20.509], contact: "info@muzeumbetliar.sk | +421 587 983 118"}] },
+        { day: "👩 Barbara lokácie", main: null, alt: [
+            {name: "Thurzov dom (BB)", coords: [48.735, 19.146]},
+            {name: "Vodný hrad Hronsek", coords: [48.651, 19.155]},
+            {name: "Drevený artikulárny kostol Hronsek", coords: [48.650, 19.156]}
+        ], text: "Zvolenský zámok (045/245 30 01), Thurzov dom v Banskej Bystrici (048/412 58 96), Vodný hrad Hronsek (0905 869 772), Drevený artikulárny kostol Hronsek" }
+    ],
+    "14": [
+        { day: "🗓️ DEŇ 1", main: {name: "Zamagurie / Prístavisko pltí na Dunajci", coords: [49.395, 20.404], contact: "plte@plte-dunajec.sk | +421 905 298 859"}, alt: [{name: "Plte na Váhu", coords: [49.176, 18.861], contact: "info@plte-strecno.sk | 0907 196 999"}, {name: "Orava", coords: [49.261, 19.358], contact: "plte@orava.sk | +421 905 358 182"}, {name: "Plte na rieke Poprad", coords: [49.300, 20.700], contact: "Produkcia preverí aktuálnu zjazdnosť"}] },
+        { day: "🗓️ DEŇ 2", main: {name: "Múzeum Červený Kláštor", coords: [49.396, 20.414], contact: "info@muzeumcervenyklastor.sk | +421 911 393 116"}, alt: [{name: "Skanzen Stará Ľubovňa", coords: [49.314, 20.697], contact: "info@hradlubovna.sk | +421 52 43 22 422"}, {name: "Oravský podzámok", coords: [49.261, 19.357], contact: "rezervacie@oravskemuzeum.sk"}, {name: "Múzeum oravskej dediny Zuberec", coords: [49.259, 19.662], contact: "muzeum@zuberec.sk | +421 43 5395 149"}] },
+        { day: "🗓️ DEŇ 3", main: {name: "Goralský dvor", coords: [49.375, 20.457], contact: "info@goralskydvor.sk | +421 905 389 413"}, alt: [{name: "Lendak", coords: [49.237, 20.352], contact: "obec@lendak.sk | 052 468 40 40"}, {name: "Osturňa", coords: [49.333, 20.244], contact: "obecosturna@netlines.sk | 052 489 27 50"}, {name: "Salaš v Bachledovej doline", coords: [49.274, 20.306], contact: "info@bachledka.sk | +421 911 977 455"}] },
+        { day: "👩 Barbara lokácie", main: null, alt: [
+            {name: "Podbiel - Chata u Pltníka", coords: [49.308, 19.486]}
+        ], text: "Skanzen v St. Ľubovni a plte Červený kláštor (0949 169 044), Múzeum oravskej dediny Zuberec a plte Oravský podzámok (0911 358 182), Podbiel - Chata u Pltníka (0904 149 515)" }
+    ],
+    "15": [
+        { day: "🗓️ DEŇ 1", main: {name: "Tržnica Miletičova", coords: [48.155, 17.138], contact: "Správa mestskej tržnice (Ruzinov) +421 2 48 28 41 11"}, alt: [{name: "Tržnica Trnavské Mýto", coords: [48.158, 17.129], contact: "trznica@novatrznica.sk"}, {name: "Stará Vajnorská", coords: [48.188, 17.185], contact: "Zlaté Piesky a Stará Vajnorská - ázijský trh"}, {name: "Tržnica Žilinská", coords: [48.156, 17.109], contact: "staromestske.trhy@staremesto.sk"}] },
+        { day: "🗓️ DEŇ 2", main: {name: "Areál bývalých závodov ZDA Partizánske alebo Svit", coords: [48.626, 18.374], contact: "primator@partizanske.sk | +421 38 749 22 13"}, alt: [{name: "Cvernovka", coords: [48.177, 17.126], contact: "info@novacvernovka.eu"}, {name: "Múzeum obuvi", coords: [48.627, 18.374], contact: "muzeum@partizanske.sk"}, {name: "Makyta Púchov", coords: [49.123, 18.328], contact: "makyta@makyta.sk | +421 42 465 01 11"}] },
+        { day: "🗓️ DEŇ 3", main: {name: "Fresh Market - Tradičné ázijské bistro", coords: [48.167, 17.152], contact: "Správa tržnice Fresh Market"}, alt: [{name: "Tržnica Nivy", coords: [48.147, 17.128], contact: "Správa tržnice Nivy"}, {name: "Rodinná bylinková záhrada", coords: [48.120, 17.230], contact: "Lokačný manažér"}, {name: "Ázijské potraviny", coords: [48.182, 17.195], contact: "Lokálna predajňa"}] },
+        { day: "👩 Barbara lokácie", main: null, alt: [
+            {name: "Internáty Mlynská dolina", coords: [48.159, 17.069]},
+            {name: "Sološnica", coords: [48.468, 17.227]}
+        ], text: "Internáty Mlynská dolina, Cvernovka, Miletička, Tržnica na Rožňavskej, Sološnica" }
+    ]
+};
 
         var markersGroup = L.featureGroup().addTo(map);
         var activeMarkers = {};
@@ -370,34 +467,53 @@
             var markerObjects = [];
 
             data.forEach(function(dayData) {
-                listHtml += `<div class="day-group">`;
-                listHtml += `<div class="day-title">${dayData.day}</div>`;
-                
-                var mId = 'loc-' + itemCounter++;
-                listHtml += `<div class="loc-type">Hlavná lokácia</div>`;
-                listHtml += `<div class="loc-item main" id="${mId}" onclick="focusMarker('${mId}')">${dayData.main.name}</div>`;
-                
-                var markerMain = L.marker(dayData.main.coords, {icon: redIcon})
-                    .bindTooltip(dayData.main.name, { permanent: true, interactive: true, direction: 'right', className: 'main-label', offset: tooltipOffset })
-                    .on('click', function() { focusMarker(mId); });
-                markersGroup.addLayer(markerMain);
-                markerObjects.push({ id: mId, name: dayData.main.name, isMain: true, marker: markerMain, originalIcon: redIcon });
-                bounds.push(dayData.main.coords);
-
-                listHtml += `<div class="loc-type">Alternatívy</div>`;
-                dayData.alt.forEach(function(altLoc) {
-                    var aId = 'loc-' + itemCounter++;
-                    listHtml += `<div class="loc-item alt" id="${aId}" onclick="focusMarker('${aId}')">${altLoc.name}</div>`;
+                if(dayData.main === null) {
+                    listHtml += `<div class="barbara-loc"><b>${dayData.day}</b>:<br/> ${dayData.text}</div>`;
                     
-                    var markerAlt = L.marker(altLoc.coords, {icon: blueIcon})
-                        .bindTooltip(altLoc.name, { permanent: true, interactive: true, direction: 'right', className: 'alt-label', offset: tooltipOffset })
-                        .on('click', function() { focusMarker(aId); });
-                    markersGroup.addLayer(markerAlt);
-                    markerObjects.push({ id: aId, name: altLoc.name, isMain: false, marker: markerAlt, originalIcon: blueIcon });
-                    bounds.push(altLoc.coords);
-                });
-                
-                listHtml += `</div>`;
+                    if (dayData.alt && dayData.alt.length > 0) {
+                        listHtml += `<div class="loc-type">Zobraziť na mape</div>`;
+                        dayData.alt.forEach(function(altLoc) {
+                            var bId = 'loc-' + itemCounter++;
+                            listHtml += `<div class="loc-item barbara" id="${bId}" onclick="focusMarker('${bId}')">${altLoc.name}</div>`;
+                            
+                            var markerAlt = L.marker(altLoc.coords, {icon: lightGreenIcon})
+                                .bindTooltip(altLoc.name, { permanent: true, interactive: true, direction: 'right', className: 'barbara-label', offset: tooltipOffset })
+                                .on('click', function() { focusMarker(bId); });
+                            markersGroup.addLayer(markerAlt);
+                            markerObjects.push({ id: bId, name: altLoc.name, isMain: false, marker: markerAlt, originalIcon: lightGreenIcon });
+                            bounds.push(altLoc.coords);
+                        });
+                    }
+                } else {
+                    listHtml += `<div class="day-group">`;
+                    listHtml += `<div class="day-title">${dayData.day}</div>`;
+                    
+                    var mId = 'loc-' + itemCounter++;
+                    listHtml += `<div class="loc-type">Hlavná lokácia</div>`;
+                    listHtml += `<div class="loc-item main" id="${mId}" onclick="focusMarker('${mId}')" style="display:flex; flex-direction:column; align-items:flex-start;"><div><b>${dayData.main.name}</b></div><div style="font-size:11px; color:#555; margin-top:3px; font-weight:normal;">${dayData.main.contact ? '📞 ' + dayData.main.contact : ''}</div></div>`;
+                    
+                    var markerMain = L.marker(dayData.main.coords, {icon: redIcon})
+                        .bindTooltip(dayData.main.name, { permanent: true, interactive: true, direction: 'right', className: 'main-label', offset: tooltipOffset })
+                        .on('click', function() { focusMarker(mId); });
+                    markersGroup.addLayer(markerMain);
+                    markerObjects.push({ id: mId, name: dayData.main.name, isMain: true, marker: markerMain, originalIcon: redIcon });
+                    bounds.push(dayData.main.coords);
+
+                    listHtml += `<div class="loc-type">Alternatívy</div>`;
+                    dayData.alt.forEach(function(altLoc) {
+                        var aId = 'loc-' + itemCounter++;
+                        listHtml += `<div class="loc-item alt" id="${aId}" onclick="focusMarker('${aId}')" style="display:flex; flex-direction:column; align-items:flex-start;"><div><b>${altLoc.name}</b></div><div style="font-size:11px; color:#555; margin-top:3px; font-weight:normal;">${altLoc.contact ? '📞 ' + altLoc.contact : ''}</div></div>`;
+                        
+                        var markerAlt = L.marker(altLoc.coords, {icon: blueIcon})
+                            .bindTooltip(altLoc.name, { permanent: true, interactive: true, direction: 'right', className: 'alt-label', offset: tooltipOffset })
+                            .on('click', function() { focusMarker(aId); });
+                        markersGroup.addLayer(markerAlt);
+                        markerObjects.push({ id: aId, name: altLoc.name, isMain: false, marker: markerAlt, originalIcon: blueIcon });
+                        bounds.push(altLoc.coords);
+                    });
+                    
+                    listHtml += `</div>`;
+                }
             });
 
             document.getElementById('locations-list').innerHTML = listHtml;
