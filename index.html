@@ -135,7 +135,7 @@
                 box-sizing: border-box;
                 box-shadow: 0 -4px 15px rgba(0,0,0,0.2);
                 margin: 0;
-                padding-bottom: env(safe-area-inset-bottom, 15px); /* Podpora pre iPhone lištu */
+                padding-bottom: env(safe-area-inset-bottom, 15px);
             }
 
             .leaflet-bottom {
@@ -205,7 +205,7 @@
             <div class="legend-item"><img class="legend-img" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png" alt="red"><b>Hlavné</b></div>
             <div class="legend-item"><img class="legend-img" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png" alt="blue"><b>Alternatívy</b></div>
             <div class="legend-item"><img class="legend-img" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-gold.png" alt="gold"><b>Vybrané</b></div>
-        <div class="legend-item"><img class="legend-img" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png" alt="green"><b>Barbara</b></div>
+            <div class="legend-item"><img class="legend-img" src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png" alt="green"><b>Barbara</b></div>
         </div>
 
         <div class="list-container" id="locations-list"></div>
@@ -245,7 +245,6 @@
             popupAnchor: [1, -34 * iconScale], 
             shadowSize: [41 * iconScale, 41 * iconScale]
         });
-
         
         var lightGreenIcon = new L.Icon({
             iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
@@ -267,18 +266,18 @@
 
         var episodesData = {
     "1": [
-        { day: "🗓️ DEŇ 1", main: {name: "Fiľakovský hrad", coords: [48.271, 19.824], contact: "info@hradfilakovo.sk | 047/43 82 017"}, alt: [{name: "Hrad Šomoška", coords: [48.171, 19.856], contact: "047/449 11 54"}, {name: "Hrad Modrý Kameň", coords: [48.243, 19.333], contact: "hradmodrykamen@snm.sk | +421 47 2454 100"}, {name: "Hrad Čabraď", coords: [48.243, 19.103], contact: "tomasik.r86@gmail.com"}] },
+        { day: "🗓️ DEŇ 1", main: {name: "Fiľakovský hrad", coords: [48.271, 19.824], contact: "info@hradfilakovo.sk | 047/43 82 017"}, alt: [{name: "Hrad Šomoška", coords: [48.171, 19.856], contact: "047/449 11 54"}, {name: "Hrad Modrý Kameň", coords: [48.243, 19.333], contact: "hradmodrykamen@snm.sk | +421 47 2454 100"}, {name: "Hrad Čabraď", coords: [48.243, 19.103], contact: "tomasik.r86@gmail.com (Združenie RONDEL)"}] },
         { day: "🗓️ DEŇ 2", main: {name: "Františkánsky kláštor Fiľakovo", coords: [48.270, 19.826], contact: "+421 47 438 10 16 | klastorfil@frantiskani.sk"}, alt: [{name: "Kláštor Bzovík", coords: [48.318, 19.088], contact: "045 55 19 397 | obecnyuradbzovik@gmail.com"}, {name: "Kláštor Hronský Beňadik", coords: [48.344, 18.557], contact: "Farnosť Hronský Beňadik"}, {name: "Zámok Halič", coords: [48.358, 19.575], contact: "recepcia@hotelgalicianueva.sk | +421 47 285 22 00"}] },
         { day: "🗓️ DEŇ 3", main: {name: "Zámok Halič", coords: [48.358, 19.575], contact: "recepcia@hotelgalicianueva.sk | +421 47 285 22 00"}, alt: [{name: "Kaštieľ Divín", coords: [48.448, 19.531], contact: "kultura@divin.sk | +421 948 440 428"}, {name: "Kaštieľ Svätý Anton", coords: [48.422, 18.940], contact: "info@msa.sk | +421 45 691 39 32"}, {name: "Zvolenský zámok", coords: [48.572, 19.127], contact: "zvolen@sng.sk | 045 53 21 903"}] },
         { day: "👩 Barbara lokácie", main: null, alt: [
             {name: "Koháryho kúria vo Fiľakove", coords: [48.272, 19.825]}, 
             {name: "Hradné múzeum vo Fiľakove", coords: [48.271, 19.823]}
-        ], text: "Koháryho kúria vo Fiľakove (Marian Mesiarik: 0908633935), Hradné múzeum vo Fiľakove (muzeum@hradfilakovo.sk)" }
+        ], text: "Koháryho kúria vo Fiľakove (Marian Mesiarik: 0908633935, mmesiarik@gmail.com), odborný a historický garant je Hradné múzeum vo Fiľakove (muzeum@hradfilakovo.sk)" }
     ],
     "2": [
-        { day: "🗓️ DEŇ 1", main: {name: "Salaš Zbojská", coords: [48.727, 19.854], contact: "zbojska@zbojska.sk | +421 910 418 788"}, alt: [{name: "Salaš Krajinka", coords: [49.091, 19.263], contact: "salaskrajinka@gmail.com | +421 915 803 444"}, {name: "Salaš Syrex", coords: [49.278, 19.187], contact: "info@syrex.sk | +421 905 500 500"}, {name: "Koliba u dobrého pastiera", coords: [49.073, 19.231], contact: "recepcia@udobrehopastiera.sk"}] },
-        { day: "🗓️ DEŇ 2", main: {name: "Historické lazy Podpoľania", coords: [48.564, 19.418], contact: "info@regionpodpolanie.sk | +421 948 874 635"}, alt: [{name: "Múzeum oravskej dediny Zuberec", coords: [49.259, 19.662], contact: "muzeum@zuberec.sk | +421 43 5395 149"}, {name: "Skanzen Vychylovka", coords: [49.382, 19.096], contact: "+421 41 439 72 19"}, {name: "Skanzen Pribylina", coords: [49.106, 19.799], contact: "skanzenpribylina@liptovskemuzeum.sk | +421 44 228 99 23"}] },
-        { day: "🗓️ DEŇ 3", main: {name: "Príroda Karpát", coords: [48.694, 19.682], contact: "Štátna ochrana prírody SR: +421 48 433 18 11"}, alt: [{name: "Jánošíkove diery", coords: [49.257, 19.066], contact: "janosikovediery@gmail.com | +421 905 324 428"}, {name: "Kráľova hoľa", coords: [48.882, 20.139], contact: "podatelna@napant.sk"}, {name: "Zádielska tiesňava", coords: [48.618, 20.827], contact: "npslovenskykras@sopsr.sk"}] },
+        { day: "🗓️ DEŇ 1", main: {name: "Vagačov dom (Detva)", coords: [48.560, 19.418], contact: "0911 033 646 | office@vagacovdom.sk"}, alt: [{name: "Historické lazy Podpoľania", coords: [48.564, 19.418], contact: "info@regionpodpolanie.sk | +421 948 874 635"}, {name: "Salaš Zbojská", coords: [48.727, 19.854], contact: "zbojska@zbojska.sk | +421 910 418 788"}] },
+        { day: "🗓️ DEŇ 2", main: {name: "Podpolianske múzeum v Detve", coords: [48.562, 19.419], contact: "045/5455 502"}, alt: [{name: "Terchová (osada u Jánošov)", coords: [49.256, 19.030], contact: "0904 098 285"}, {name: "Skanzen Čičmany (Radenov dom)", coords: [48.955, 18.516], contact: "0918 187 683 | cicmany@pmza.sk"}, {name: "Valašská dedina skanzen Rožnov", coords: [49.461, 18.148], contact: "+420 571 757 111 | muzeum@nmvp.cz"}] },
+        { day: "🗓️ DEŇ 3", main: {name: "Zvolenská Slatina", coords: [48.564, 19.272], contact: ""}, alt: [{name: "Príroda Karpát", coords: [48.694, 19.682], contact: "Štátna ochrana prírody SR: +421 48 433 18 11"}, {name: "Kráľova hoľa", coords: [48.882, 20.139], contact: "podatelna@napant.sk"}] },
         { day: "👩 Barbara lokácie", main: null, alt: [
             {name: "Rožnov pod Radhoštěm", coords: [49.461, 18.148]},
             {name: "Skanzen Čičmany", coords: [48.955, 18.516]},
@@ -286,7 +285,7 @@
             {name: "Podpolianske múzeum (Detva)", coords: [48.562, 19.419]},
             {name: "Vagačov dom", coords: [48.560, 19.418]},
             {name: "Zvolenská Slatina", coords: [48.564, 19.272]}
-        ], text: "Rožnov pod Radhoštěm (+420 571 757 111), Skanzen Čičmany (0918 187 683), Terchová (0904 098 285), Podpolianske múzeum (045/5455 502), Vagačov dom (0911 033 646), Zvolenská Slatina" }
+        ], text: "Valašská dedina skanzen Rožnov pod Radhoštěm (+420 571 757 111, muzeum@nmvp.cz), Skanzen Čičmany - Radenov dom (0918 187 683, cicmany@pmza.sk), Terchová - osada u Jánošov (0904 098 285), Podpolianske múzeum v Detve (045/5455 502), Vagačov dom (0911 033 646, office@vagacovdom.sk), Zvolenská Slatina" }
     ],
     "3": [
         { day: "🗓️ DEŇ 1", main: {name: "Kremnica / Banská Štiavnica", coords: [48.704, 18.917], contact: "infocentrum@kremnica.sk | +421 45 6742 856 / tic@banskastiavnica.sk"}, alt: [{name: "Spišská Sobota", coords: [49.065, 20.315], contact: "Natáčanie na dvore penziónu rieši produkcia lokálne v Poprade"}, {name: "Kežmarok", coords: [49.133, 20.433], contact: "info@kezmarok.sk"}] },
@@ -295,11 +294,11 @@
         { day: "👩 Barbara lokácie", main: null, alt: [
             {name: "MsÚ v Kremnici", coords: [48.705, 18.918]},
             {name: "Múzeum kultúry karpatských Nemcov", coords: [48.142, 17.103]}
-        ], text: "MsÚ v Kremnici (045/2289 714), Múzeum kultúry karpatských Nemcov (02/204 912 25)" }
+        ], text: "MsÚ v Kremnici (a budovy pod jeho správou) (045/2289 714), Múzeum kultúry karpatských Nemcov (02/204 912 25)" }
     ],
     "4": [
         { day: "🗓️ DEŇ 1", main: {name: "Kaštieľ Borša", coords: [48.381, 21.705], contact: "recepcia@borsikastely.eu"}, alt: [{name: "Kaštieľ Betliar", coords: [48.702, 20.509], contact: "info@muzeumbetliar.sk | +421 587 983 118"}, {name: "Kráľovský Chlmec", coords: [48.423, 21.980], contact: "tic@kralovskychlmec.sk"}, {name: "Kaštieľ v Trebišove", coords: [48.621, 21.722], contact: "0911 941 988"}] },
-        { day: "🗓️ DEŇ 2", main: {name: "Breh rieky Bodrog", coords: [48.390, 21.680], contact: "Lokáciu pri rieke s povolením na oheň dohodne produkcia"}, alt: [{name: "Mŕtve rameno Tajba", coords: [48.375, 21.785], contact: "Zabezpečuje CHKO Latorica"}, {name: "Senecké jazerá", coords: [48.219, 17.419], contact: "sprava@slnechnejazera.eu"}, {name: "Brehy rieky Latorica", coords: [48.497, 21.936], contact: "Správa povodia Bodrogu a Latorice"}] },
+        { day: "🗓️ DEŇ 2", main: {name: "Breh rieky Bodrog", coords: [48.390, 21.680], contact: "Lokáciu pri rieke s povolením na oheň dohodne produkcia so správou povodia"}, alt: [{name: "Mŕtve rameno Tajba", coords: [48.375, 21.785], contact: "Zabezpečuje CHKO Latorica"}, {name: "Senecké jazerá", coords: [48.219, 17.419], contact: "sprava@slnechnejazera.eu"}, {name: "Brehy rieky Latorica", coords: [48.497, 21.936], contact: "Správa povodia Bodrogu a Latorice"}] },
         { day: "🗓️ DEŇ 3", main: {name: "Dóm sv. Alžbety", coords: [48.720, 21.257], contact: "guides@domsvalzbety.sk | +421 908 957 692"}, alt: [{name: "Hlavná ulica Košice", coords: [48.721, 21.258], contact: "Informačné centrum Košice"}, {name: "Východoslovenské múzeum", coords: [48.726, 21.253], contact: "info@vsmuzeum.sk | 055/6223 061"}, {name: "Katova bašta", coords: [48.722, 21.261], contact: "info@vsmuzeum.sk | 055/622 03 09"}] },
         { day: "👩 Barbara lokácie", main: null, alt: [
             {name: "Hrad Regéc", coords: [48.380, 21.343]},
@@ -323,9 +322,9 @@
         { day: "🗓️ DEŇ 3", main: {name: "Stará Tržnica Bratislava", coords: [48.144, 17.111], contact: "trznica@staratrznica.sk"}, alt: [{name: "Košice", coords: [48.720, 21.258], contact: "ŽNO Košice"}, {name: "Komárno", coords: [47.760, 18.125], contact: "ŽNO Komárno (Menház)"}, {name: "Synagóga v Nových Zámkoch", coords: [47.986, 18.163], contact: "ŽNO Nové Zámky"}] },
         { day: "👩 Barbara lokácie", main: null, alt: [
             {name: "Múzeum slovenskej dediny v Martine", coords: [49.034, 18.932]},
-            {name: "Skalica", coords: [48.844, 17.227], contact: "zahorskemuzeum@zahorskemuzeum.sk | +421 34 664 42 05"},
+            {name: "Skalica", coords: [48.844, 17.227]},
             {name: "Mikulov", coords: [48.805, 16.637]}
-        ], text: "Múzeum slovenskej dediny v Martine (043/2458 111), Skalica a Mikulov" }
+        ], text: "Múzeum slovenskej dediny v Martine (043/2458 111), Skalica a Mikulov (exteriér)" }
     ],
     "7": [
         { day: "🗓️ DEŇ 1", main: {name: "Zemplínsky hrad", coords: [48.441, 21.815], contact: "starosta@obeczemplin.sk | 056/679 84 57"}, alt: [{name: "Hrad Brekov", coords: [48.902, 21.832], contact: "brekov@brekov.sk"}, {name: "Jasov", coords: [48.681, 20.975], contact: "opatstvojasov@gmail.com | 055/466 41 06"}, {name: "Hradište v Tibave", coords: [48.739, 22.285], contact: "obectibava@gmail.com | 056/658 24 31"}] },
@@ -335,7 +334,7 @@
             {name: "Zbojnícky hrad Prešov (Solivar)", coords: [48.986, 21.285]},
             {name: "Veľký Kamenec", coords: [48.358, 21.805]},
             {name: "Hrad Čičva", coords: [48.913, 21.739]}
-        ], text: "Mongolské jurty (mongolskejurty.sk), Zbojnícky hrad Prešov (Solivar), Veľký Kamenec a Čičva" }
+        ], text: "Mongolské jurty (mongolskejurty.sk), Zbojnícky hrad Prešov (Solivar), Veľký Kamenec a Čičva (zrúcaniny)" }
     ],
     "8": [
         { day: "🗓️ DEŇ 1", main: {name: "Skanzen Svidník", coords: [49.308, 21.566], contact: "svidnik@snm.sk | +421 54 245 10 01"}, alt: [{name: "Skanzen Humenné", coords: [48.940, 21.905], contact: "sekretariat@muzeumhumenne.sk | 057/775 22 40"}, {name: "Múzeum ľudovej architektúry Bardejovské Kúpele", coords: [49.329, 21.267], contact: "muzeum@muzeumbardejov.sk | +421 54 472 20 09"}, {name: "Skanzen pod Ľubovnianskym hradom", coords: [49.314, 20.697], contact: "info@hradlubovna.sk | +421 52 43 22 422"}] },
@@ -366,7 +365,7 @@
             {name: "Habánske múzeum Veľké Leváre", coords: [48.501, 17.002]},
             {name: "Habánsky mlyn (Sobotište)", coords: [48.730, 17.405]},
             {name: "Záhorské múzeum v Skalici", coords: [48.844, 17.228]}
-        ], text: "Habánske múzeum Veľké Leváre (034/779 44 93), Habánsky mlyn (0918438044), Záhorské múzeum v Skalici" }
+        ], text: "Habánske múzeum Veľké Leváre (034/779 44 93), Habánsky mlyn (Múzeum habánov, Sobotište) - kontakt na sprievodkyňu: 0918 438 044, zriaďovateľ múzea: 034/628 21 02, Záhorské múzeum v Skalici" }
     ],
     "11": [
         { day: "🗓️ DEŇ 1", main: {name: "Múzeum kultúry Chorvátov na Slovensku", coords: [48.205, 16.975], contact: "02/204 931 02"}, alt: [{name: "Chorvátsky Grob", coords: [48.226, 17.288], contact: "02/322 230 01"}, {name: "Jarovce / Čunovo", coords: [48.064, 17.113], contact: "Úrad mestskej časti"}, {name: "Rusovce", coords: [48.056, 17.148], contact: "Úrad mestskej časti"}] },
@@ -375,13 +374,13 @@
         { day: "👩 Barbara lokácie", main: null, alt: [
             {name: "Múzeum kultúry Chorvátov", coords: [48.206, 16.976]},
             {name: "Chorvátsky Grob", coords: [48.226, 17.289], contact: "02/322 230 01"}
-        ], text: "Múzeum kultúry Chorvátov na Slovensku (02/204 931 02), Chorvátsky Grob, Chorvátsky kultúrny zväz na Slovensku, Múzeum slovenskej dediny, Múzeum ľudovej architektúry v Bardejove a Humennom" }
+        ], text: "Múzeum kultúry Chorvátov na Slovensku (02/204 931 02), Chorvátsky Grob - kontakt na starostku (02/322 230 01), Múzeum ľudovej architektúry v Bardejove a Humennom (054/472 20 72, 057/775 56 71), Múzeum kultúry Chorvátov Martin" }
     ],
     "12": [
         { day: "🗓️ DEŇ 1", main: {name: "Hrad Devín", coords: [48.173, 16.978], contact: "muzeum.devin@bratislava.sk"}, alt: [{name: "Sad Janka Kráľa", coords: [48.135, 17.110], contact: "Mesto Bratislava"}, {name: "Bratislavský hrad", coords: [48.142, 17.100], contact: "bratislavskyhrad@snm.sk | +421 2 2048 3110"}, {name: "Hrad Pajštún", coords: [48.273, 17.081], contact: "Lesy SR"}] },
         { day: "🗓️ DEŇ 2", main: {name: "Trnava", coords: [48.377, 17.587], contact: "TIC Trnava"}, alt: [{name: "Sereď", coords: [48.288, 17.738], contact: "Mestské múzeum Sereď"}, {name: "Šurany", coords: [48.085, 18.185], contact: "Mestský úrad Šurany"}, {name: "Sládkovičovo", coords: [48.203, 17.639], contact: "Mestský úrad Sládkovičovo"}] },
         { day: "🗓️ DEŇ 3", main: {name: "Historický sedliacky dvor", coords: [48.288, 17.266], contact: "Abeland (0911 11 22 33)"}, alt: [{name: "Múzeum Červený Kameň", coords: [48.391, 17.335], contact: "info@hradcervenykamen.sk"}, {name: "Modra", coords: [48.334, 17.309], contact: "TIC Modra"}, {name: "Abeland", coords: [48.256, 17.135], contact: "info@abeland.sk"}] },
-        { day: "👩 Barbara lokácie", main: null, alt: [], text: "Téma granadierskeho pochodu a cukrovej repy (už bolo spracované)" }
+        { day: "👩 Barbara lokácie", main: null, alt: [], text: "Bara nenašla žiadne konkrétne lokácie, priznala, že sa nevedela pohnúť z miesta." }
     ],
     "13": [
         { day: "🗓️ DEŇ 1", main: {name: "Zvolenský zámok", coords: [48.572, 19.127], contact: "zvolen@sng.sk | 045 53 21 903"}, alt: [{name: "Bratislavský hrad", coords: [48.142, 17.101], contact: "bratislavskyhrad@snm.sk | +421 2 2048 3110"}, {name: "Smolenický zámok", coords: [48.513, 17.432], contact: "zamok-smolenice@savba.sk | +421 33 5586 193"}, {name: "Oravský hrad", coords: [49.261, 19.358], contact: "rezervacie@oravskemuzeum.sk | +421 43 581 61 51"}] },
@@ -391,7 +390,7 @@
             {name: "Thurzov dom (BB)", coords: [48.735, 19.146]},
             {name: "Vodný hrad Hronsek", coords: [48.651, 19.155]},
             {name: "Drevený artikulárny kostol Hronsek", coords: [48.650, 19.156]}
-        ], text: "Zvolenský zámok (045/245 30 01), Thurzov dom v Banskej Bystrici (048/412 58 96), Vodný hrad Hronsek (0905 869 772), Drevený artikulárny kostol Hronsek" }
+        ], text: "Thurzov dom v Banskej Bystrici (048/412 58 96), Vodný hrad Hronsek (0905 869 772), Drevený artikulárny kostol Hronsek (048/418 81 28)" }
     ],
     "14": [
         { day: "🗓️ DEŇ 1", main: {name: "Zamagurie / Prístavisko pltí na Dunajci", coords: [49.395, 20.404], contact: "plte@plte-dunajec.sk | +421 905 298 859"}, alt: [{name: "Plte na Váhu", coords: [49.176, 18.861], contact: "info@plte-strecno.sk | 0907 196 999"}, {name: "Orava", coords: [49.261, 19.358], contact: "plte@orava.sk | +421 905 358 182"}, {name: "Plte na rieke Poprad", coords: [49.300, 20.700], contact: "Produkcia preverí aktuálnu zjazdnosť"}] },
@@ -404,11 +403,11 @@
     "15": [
         { day: "🗓️ DEŇ 1", main: {name: "Tržnica Miletičova", coords: [48.155, 17.138], contact: "Správa mestskej tržnice (Ruzinov) +421 2 48 28 41 11"}, alt: [{name: "Tržnica Trnavské Mýto", coords: [48.158, 17.129], contact: "trznica@novatrznica.sk"}, {name: "Stará Vajnorská", coords: [48.188, 17.185], contact: "Zlaté Piesky a Stará Vajnorská - ázijský trh"}, {name: "Tržnica Žilinská", coords: [48.156, 17.109], contact: "staromestske.trhy@staremesto.sk"}] },
         { day: "🗓️ DEŇ 2", main: {name: "Areál bývalých závodov ZDA Partizánske alebo Svit", coords: [48.626, 18.374], contact: "primator@partizanske.sk | +421 38 749 22 13"}, alt: [{name: "Cvernovka", coords: [48.177, 17.126], contact: "info@novacvernovka.eu"}, {name: "Múzeum obuvi", coords: [48.627, 18.374], contact: "muzeum@partizanske.sk"}, {name: "Makyta Púchov", coords: [49.123, 18.328], contact: "makyta@makyta.sk | +421 42 465 01 11"}] },
-        { day: "🗓️ DEŇ 3", main: {name: "Fresh Market - Tradičné ázijské bistro", coords: [48.167, 17.152], contact: "Správa tržnice Fresh Market"}, alt: [{name: "Tržnica Nivy", coords: [48.147, 17.128], contact: "Správa tržnice Nivy"}, {name: "Rodinná bylinková záhrada", coords: [48.120, 17.230], contact: "Lokačný manažér"}, {name: "Ázijské potraviny", coords: [48.182, 17.195], contact: "Lokálna predajňa"}] },
+        { day: "🗓️ DEŇ 3", main: {name: "Fresh Market - Tradičné ázijské bistro", coords: [48.167, 17.152], contact: "Lokačný manažér dohodne konkrétnu prevádzku vo Fresh Markete."}, alt: [{name: "Tržnica Nivy", coords: [48.147, 17.128], contact: "Správa tržnice Nivy"}, {name: "Rodinná bylinková záhrada", coords: [48.120, 17.230], contact: "Produkcia vyhľadá lokálneho pestovateľa ázijských byliniek v okolí."}, {name: "Ázijské potraviny", coords: [48.182, 17.195], contact: "Priama dohoda s majiteľmi vybranej prevádzky."}] },
         { day: "👩 Barbara lokácie", main: null, alt: [
             {name: "Internáty Mlynská dolina", coords: [48.159, 17.069]},
             {name: "Sološnica", coords: [48.468, 17.227]}
-        ], text: "Internáty Mlynská dolina, Cvernovka, Miletička, Tržnica na Rožňavskej, Sološnica" }
+        ], text: "Internáty Mlynská dolina, Cvernovka, Miletička, Tržnica na Rožňavskej, Sološnica (jazykové stredisko) – (bez kontaktu)" }
     ]
 };
 
